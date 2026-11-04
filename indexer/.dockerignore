@@ -1,0 +1,15 @@
+.git
+__pycache__
+*.pyc
+.venv
+venv
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+tests/
+# Third-party documents never enter the build context; the Job fetches them.
+corpus/
+raw/
+Dockerfile
+.dockerignore
