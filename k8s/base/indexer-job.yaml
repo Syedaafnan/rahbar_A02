@@ -1,0 +1,108 @@
+# The indexer: the ONLY writer to Chroma (section 4.2, ADR 0001).
+# Runs once, exits, and is re-run from the CronJob's template when the material
+# changes:   kubectl create job --from=cronjob/reindex manual-reindex-1 -n rahbar
+#
+# Its pod template is kept identical to reindex-cronjob.yaml on purpose (same image,
+# same args, same limits). If you change one, change the other.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: corpus-data
+  labels: { app.kubernetes.io/name: indexer, app.kubernetes.io/part-of: rahbar }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 512Mi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: indexer
+  labels: { app.kubernetes.io/name: indexer, app.kubernetes.io/part-of: rahbar }
+spec:
+  backoffLimit: 2                 # three attempts in total, then the Job is Failed
+  activeDeadlineSeconds: 3600     # a hung OCR run must not hold the volume forever
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: indexer, app.kubernetes.io/part-of: rahbar }
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: rahbar-indexer
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        # Download the documents listed in corpus/sources.yaml into the corpus PVC.
+        # Files already on the PVC are reused, so a re-index costs the website nothing
+        # unless sources.yaml changed. Then compare the bytes with the committed
+        # MANIFEST.md and log any document the university has changed.
+        - name: fetch-corpus
+          image: rahbar-indexer
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c"]
+          args:
+            - >-
+              python /app/corpus/fetch.py &&
+              (python /app/corpus/fetch.py --verify ||
+              echo '{"logger":"rahbar.fetch","msg":"corpus differs from committed MANIFEST.md"}')
+          env:
+            - { name: CORPUS_RAW, value: /corpus }
+            - { name: CORPUS_MANIFEST_OUT, value: /corpus/MANIFEST.fetched.md }
+            - { name: HOME, value: /tmp }
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - { name: corpus, mountPath: /corpus }
+            - { name: tmp, mountPath: /tmp }
+      containers:
+        - name: indexer
+          image: rahbar-indexer
+          imagePullPolicy: IfNotPresent
+          args: []                      # the real pipeline; `--dummy` for week-1 tests
+          envFrom:
+            - configMapRef:
+                name: rahbar-config
+          env:
+            - { name: HOME, value: /tmp }
+          # Peak from `kubectl top pods` during OCR + embedding:
+          # docs/evidence/kubectl-top.txt and docs/ENGINEERING-NOTES.md Q4.
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 1536Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - { name: corpus, mountPath: /corpus, readOnly: true }
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: corpus
+          persistentVolumeClaim:
+            claimName: corpus-data
+        - name: tmp
+          emptyDir:
+            sizeLimit: 1Gi             # pdf2image rasterises scanned pages here

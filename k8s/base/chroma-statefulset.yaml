@@ -1,0 +1,79 @@
+# The vector store. A StatefulSet, not a Deployment (docs/ARCHITECTURE.md):
+# - volumeClaimTemplates give the pod its OWN claim (chroma-data-chroma-0) that
+#   follows the stable identity chroma-0 across restarts and reschedules;
+# - a Deployment's rolling update would start a second pod against the same
+#   ReadWriteOnce volume while the first still holds it, i.e. two writers on one
+#   SQLite/HNSW directory, or a new pod stuck Pending on the attach.
+# The StatefulSet stops chroma-0 before it starts the replacement.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: chroma
+  labels: { app.kubernetes.io/name: chroma, app.kubernetes.io/part-of: rahbar }
+spec:
+  serviceName: chroma
+  replicas: 1
+  selector:
+    matchLabels: { app.kubernetes.io/name: chroma }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: chroma, app.kubernetes.io/part-of: rahbar }
+    spec:
+      serviceAccountName: rahbar-chroma
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000                 # make the PVC writable by uid 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: chroma
+          # Same version as chromadb-client in api/ and indexer/ requirements.txt.
+          image: chromadb/chroma:1.0.12
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8000 }
+          env:
+            - { name: IS_PERSISTENT, value: "TRUE" }
+            - { name: PERSIST_DIRECTORY, value: /data }
+            - { name: ANONYMIZED_TELEMETRY, value: "FALSE" }
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 768Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          startupProbe:
+            httpGet: { path: /api/v2/heartbeat, port: http }
+            periodSeconds: 2
+            failureThreshold: 30
+          livenessProbe:
+            httpGet: { path: /api/v2/heartbeat, port: http }
+            periodSeconds: 20
+          readinessProbe:
+            httpGet: { path: /api/v2/heartbeat, port: http }
+            periodSeconds: 10
+          volumeMounts:
+            - { name: chroma-data, mountPath: /data }
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: tmp
+          emptyDir: { sizeLimit: 64Mi }
+  volumeClaimTemplates:
+    - metadata:
+        name: chroma-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

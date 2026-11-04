@@ -1,0 +1,145 @@
+# Deny by default, then allow only the paths the architecture needs (section 4.7).
+# Needs a CNI that enforces policy: `minikube start --cni=calico`. The default
+# minikube network accepts these objects and silently ignores them.
+#
+#   ingress-nginx -> ui:8080, api:8000
+#   ui            -> (nothing: the browser, not the pod, calls /api)
+#   api           -> chroma:8000, redis:6379, LLM (Ollama :11434 or hosted :443)
+#   indexer       -> chroma:8000, Ollama :11434 (embeddings), website :80/:443 (fetch)
+#   every pod     -> kube-dns :53
+#
+# The cache is invalidated without the indexer touching Redis: the indexer stamps an
+# index_version into the Chroma collection metadata and the api keys its cache by it.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+spec:
+  podSelector: {}
+  policyTypes: ["Ingress", "Egress"]
+---
+# Default-deny egress also blocks DNS, and then no Service name resolves.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-egress
+spec:
+  podSelector: {}
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels: { kubernetes.io/metadata.name: kube-system }
+          podSelector:
+            matchLabels: { k8s-app: kube-dns }
+      ports:
+        - { protocol: UDP, port: 53 }
+        - { protocol: TCP, port: 53 }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ui
+spec:
+  podSelector:
+    matchLabels: { app.kubernetes.io/name: ui }
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: { kubernetes.io/metadata.name: ingress-nginx }
+      ports:
+        - { protocol: TCP, port: 8080 }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api
+spec:
+  podSelector:
+    matchLabels: { app.kubernetes.io/name: api }
+  policyTypes: ["Ingress", "Egress"]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: { kubernetes.io/metadata.name: ingress-nginx }
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: ui }
+      ports:
+        - { protocol: TCP, port: 8000 }
+  egress:
+    - to:
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: chroma }
+      ports:
+        - { protocol: TCP, port: 8000 }
+    - to:
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: redis }
+      ports:
+        - { protocol: TCP, port: 6379 }
+    # The LLM lives outside the cluster (Ollama on the laptop, reached through
+    # host.minikube.internal, or a hosted HTTPS endpoint). Scoped by port; an overlay
+    # can narrow the ipBlock to the host IP from
+    #   minikube ssh "grep host.minikube.internal /etc/hosts"
+    - to:
+        - ipBlock: { cidr: 0.0.0.0/0 }
+      ports:
+        - { protocol: TCP, port: 11434 }
+        - { protocol: TCP, port: 443 }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: chroma
+spec:
+  podSelector:
+    matchLabels: { app.kubernetes.io/name: chroma }
+  policyTypes: ["Ingress", "Egress"]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: api }
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: indexer }
+      ports:
+        - { protocol: TCP, port: 8000 }
+  egress: []                       # chroma calls nobody
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis
+spec:
+  podSelector:
+    matchLabels: { app.kubernetes.io/name: redis }
+  policyTypes: ["Ingress", "Egress"]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: api }
+      ports:
+        - { protocol: TCP, port: 6379 }
+  egress: []
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: indexer
+spec:
+  podSelector:
+    matchLabels: { app.kubernetes.io/name: indexer }
+  policyTypes: ["Ingress", "Egress"]
+  ingress: []                      # nothing ever calls the indexer
+  egress:
+    - to:
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: chroma }
+      ports:
+        - { protocol: TCP, port: 8000 }
+    - to:
+        - ipBlock: { cidr: 0.0.0.0/0 }
+      ports:
+        - { protocol: TCP, port: 11434 }   # embeddings
+        - { protocol: TCP, port: 80 }      # corpus fetch (nu.edu.pk serves some files on http)
+        - { protocol: TCP, port: 443 }

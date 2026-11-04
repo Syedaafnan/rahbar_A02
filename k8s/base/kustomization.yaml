@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Every object lands in rahbar, never default (section 4).
+namespace: rahbar
+labels:
+  - pairs:
+      app.kubernetes.io/managed-by: kustomize
+resources:
+  - namespace.yaml
+  - serviceaccounts.yaml
+  - configmap.yaml
+  - networkpolicy.yaml
+  - chroma-statefulset.yaml
+  - redis.yaml
+  - services.yaml
+  - api.yaml
+  - ui.yaml
+  - ingress.yaml
+  - indexer-job.yaml
+  - reindex-cronjob.yaml
+  # secret.placeholder.yaml is deliberately NOT listed: see the comment inside it.
+images:
+  - { name: rahbar-api, newTag: dev }
+  - { name: rahbar-ui, newTag: dev }
+  - { name: rahbar-indexer, newTag: dev }
