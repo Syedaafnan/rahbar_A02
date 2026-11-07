@@ -1,0 +1,25 @@
+# NetworkPolicy (Calico): the ui pod cannot reach chroma, the api pod can (section 4.7)
+# captured 2026-11-07T15:27:22Z on minikube  v1.37.0
+
+$ kubectl -n rahbar get networkpolicy
+NAME               POD-SELECTOR                     AGE
+allow-dns-egress   <none>                           11h
+api                app.kubernetes.io/name=api       11h
+chroma             app.kubernetes.io/name=chroma    11h
+default-deny-all   <none>                           11h
+indexer            app.kubernetes.io/name=indexer   11h
+redis              app.kubernetes.io/name=redis     11h
+ui                 app.kubernetes.io/name=ui        11h
+
+$ kubectl -n rahbar exec ui-5996dbdc64-s2487 -- wget -q -T 5 -O- http://chroma:8000/api/v2/heartbeat; echo "exit code: $? (non-zero = blocked)"
+wget: download timed out
+command terminated with exit code 1
+exit code: 1 (non-zero = blocked)
+
+$ kubectl -n rahbar exec ui-5996dbdc64-s2487 -- wget -q -T 5 -O- http://redis:6379; echo "exit code: $? (non-zero = blocked)"
+wget: download timed out
+command terminated with exit code 1
+exit code: 1 (non-zero = blocked)
+
+$ kubectl -n rahbar exec api-66bfcfb9c6-gmb8q -- python -c "import urllib.request as u; print('api -> chroma:', u.urlopen('http://chroma:8000/api/v2/heartbeat', timeout=5).read().decode())"
+api -> chroma: {"nanosecond heartbeat":1794065255169800739}

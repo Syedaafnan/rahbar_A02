@@ -1,0 +1,76 @@
+# Every object in the rahbar namespace (section 4.1)
+# captured 2026-11-07T15:26:12Z on minikube  v1.37.0
+
+$ kubectl -n rahbar get all,pvc,ingress,networkpolicy,serviceaccount,configmap -o wide
+NAME                         READY   STATUS      RESTARTS      AGE   IP               NODE       NOMINATED NODE   READINESS GATES
+pod/api-66bfcfb9c6-gmb8q     1/1     Running     0             54m   10.244.120.102   minikube   <none>           <none>
+pod/api-66bfcfb9c6-hmffv     1/1     Running     0             53m   10.244.120.104   minikube   <none>           <none>
+pod/api-66bfcfb9c6-s6kqm     1/1     Running     0             53m   10.244.120.103   minikube   <none>           <none>
+pod/chroma-0                 1/1     Running     1 (56m ago)   10h   10.244.120.99    minikube   <none>           <none>
+pod/indexer-9xpp7            0/1     Completed   0             10h   <none>           minikube   <none>           <none>
+pod/redis-5766dbfb48-s5k78   1/1     Running     1 (56m ago)   10h   10.244.120.96    minikube   <none>           <none>
+pod/ui-5996dbdc64-s2487      1/1     Running     1 (56m ago)   10h   10.244.120.97    minikube   <none>           <none>
+
+NAME             TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/api      ClusterIP   10.109.92.99    <none>        8000/TCP   10h   app.kubernetes.io/name=api
+service/chroma   ClusterIP   10.111.81.104   <none>        8000/TCP   10h   app.kubernetes.io/name=chroma
+service/redis    ClusterIP   10.98.15.3      <none>        6379/TCP   10h   app.kubernetes.io/name=redis
+service/ui       ClusterIP   10.98.36.28     <none>        8080/TCP   10h   app.kubernetes.io/name=ui
+
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES               SELECTOR
+deployment.apps/api     3/3     3            3           10h   api          rahbar-api:dev       app.kubernetes.io/name=api
+deployment.apps/redis   1/1     1            1           10h   redis        redis:7.4.2-alpine   app.kubernetes.io/name=redis
+deployment.apps/ui      1/1     1            1           10h   ui           rahbar-ui:dev        app.kubernetes.io/name=ui
+
+NAME                               DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES               SELECTOR
+replicaset.apps/api-5978588ffd     0         0         0       10h   api          rahbar-api:dev       app.kubernetes.io/name=api,pod-template-hash=5978588ffd
+replicaset.apps/api-5dcbbc84f9     0         0         0       10h   api          rahbar-api:dev       app.kubernetes.io/name=api,pod-template-hash=5dcbbc84f9
+replicaset.apps/api-66bfcfb9c6     3         3         3       54m   api          rahbar-api:dev       app.kubernetes.io/name=api,pod-template-hash=66bfcfb9c6
+replicaset.apps/api-8464978dd8     0         0         0       10h   api          rahbar-api:dev       app.kubernetes.io/name=api,pod-template-hash=8464978dd8
+replicaset.apps/api-b4bb7848d      0         0         0       10h   api          rahbar-api:dev       app.kubernetes.io/name=api,pod-template-hash=b4bb7848d
+replicaset.apps/api-d9f699b84      0         0         0       10h   api          rahbar-api:dev       app.kubernetes.io/name=api,pod-template-hash=d9f699b84
+replicaset.apps/redis-5766dbfb48   1         1         1       10h   redis        redis:7.4.2-alpine   app.kubernetes.io/name=redis,pod-template-hash=5766dbfb48
+replicaset.apps/redis-58ddd44d84   0         0         0       10h   redis        redis:7.4.2-alpine   app.kubernetes.io/name=redis,pod-template-hash=58ddd44d84
+replicaset.apps/ui-5996dbdc64      1         1         1       10h   ui           rahbar-ui:dev        app.kubernetes.io/name=ui,pod-template-hash=5996dbdc64
+replicaset.apps/ui-685f5d9f5b      0         0         0       10h   ui           rahbar-ui:dev        app.kubernetes.io/name=ui,pod-template-hash=685f5d9f5b
+
+NAME                      READY   AGE   CONTAINERS   IMAGES
+statefulset.apps/chroma   1/1     10h   chroma       chromadb/chroma:1.0.12
+
+NAME                                      REFERENCE        TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/api   Deployment/api   cpu: 3%/70%   3         8         3          10h
+
+NAME                    SCHEDULE    TIMEZONE       SUSPEND   ACTIVE   LAST SCHEDULE   AGE   CONTAINERS   IMAGES               SELECTOR
+cronjob.batch/reindex   0 3 * * 0   Asia/Karachi   False     0        <none>          10h   indexer      rahbar-indexer:dev   <none>
+
+NAME                STATUS     COMPLETIONS   DURATION   AGE   CONTAINERS   IMAGES               SELECTOR
+job.batch/indexer   Complete   1/1           8m30s      10h   indexer      rahbar-indexer:dev   batch.kubernetes.io/controller-uid=bcdd1a84-551a-4b79-bfde-346902aff381
+
+NAME                                         STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE   VOLUMEMODE
+persistentvolumeclaim/cache-data             Bound    pvc-e7902d0c-142e-43dc-99d5-0304fd447ba8   256Mi      RWO            standard       <unset>                 10h   Filesystem
+persistentvolumeclaim/chroma-data-chroma-0   Bound    pvc-be2337f7-ec8d-4a4a-a817-10764629218d   1Gi        RWO            standard       <unset>                 10h   Filesystem
+persistentvolumeclaim/corpus-data            Bound    pvc-abf77f23-04c3-4f43-9a49-db6ec5b58982   512Mi      RWO            standard       <unset>                 10h   Filesystem
+
+NAME                               CLASS   HOSTS          ADDRESS        PORTS   AGE
+ingress.networking.k8s.io/rahbar   nginx   rahbar.local   192.168.49.2   80      10h
+
+NAME                                               POD-SELECTOR                     AGE
+networkpolicy.networking.k8s.io/allow-dns-egress   <none>                           10h
+networkpolicy.networking.k8s.io/api                app.kubernetes.io/name=api       10h
+networkpolicy.networking.k8s.io/chroma             app.kubernetes.io/name=chroma    10h
+networkpolicy.networking.k8s.io/default-deny-all   <none>                           10h
+networkpolicy.networking.k8s.io/indexer            app.kubernetes.io/name=indexer   10h
+networkpolicy.networking.k8s.io/redis              app.kubernetes.io/name=redis     10h
+networkpolicy.networking.k8s.io/ui                 app.kubernetes.io/name=ui        10h
+
+NAME                            AGE
+serviceaccount/default          10h
+serviceaccount/rahbar-api       10h
+serviceaccount/rahbar-chroma    10h
+serviceaccount/rahbar-indexer   10h
+serviceaccount/rahbar-redis     10h
+serviceaccount/rahbar-ui        10h
+
+NAME                         DATA   AGE
+configmap/kube-root-ca.crt   1      10h
+configmap/rahbar-config      23     10h

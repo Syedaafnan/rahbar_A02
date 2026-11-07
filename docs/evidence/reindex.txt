@@ -1,0 +1,95 @@
+# Re-index without a redeploy; cache invalidated by the new index_version (sections 3.3, 4.2)
+# captured 2026-11-07T15:40:15Z on minikube  v1.37.0
+
+$ collection_meta
+{"chunk_overlap": 50, "index_version": "20261107T044259Z", "chunk_size": 400, "embed_model": "nomic-embed-text", "hnsw:space": "cosine", "dimension": 768}
+
+$ ask 'What is the tuition fee per credit hour for BS programs in 2026-27?' before-reindex-1
+HTTP/1.1 200 OK
+x-cache: hit
+x-request-id: before-reindex-1
+{
+ "request_id": "before-reindex-1",
+ "answer": "Rs. 12,000",
+ "citations": [
+  {
+   "source": "fee-structure-page.html",
+   "section": "Tuition Fee (w.e.f. Fall 2026 semester)",
+   "page": 1
+  }
+ ],
+ "answered_from_context": true,
+ "confidence": "high"
+}
+retrieved:
+  0.8425  fee-structure-page.html :: Tuition Fee (w.e.f. Fall 2026 semester)
+  0.6645  prospectus-2026-academic-rules-and-regulations.pdf :: 4. Semester Course Load
+  0.6526  fee-structure-page.html :: Miscellaneous Fees
+  0.6509  student-handbook-jun-2026.pdf :: 18. It is generally recommended that students only take the
+  0.6503  academic-rules-handbook-jun-2026.pdf :: 1. Introduction > Bachelor’s Degree Requirements
+
+$ ask 'What is the tuition fee per credit hour for BS programs in 2026-27?' before-reindex-2
+HTTP/1.1 200 OK
+x-cache: hit
+x-request-id: before-reindex-2
+{
+ "request_id": "before-reindex-2",
+ "answer": "Rs. 12,000",
+ "citations": [
+  {
+   "source": "fee-structure-page.html",
+   "section": "Tuition Fee (w.e.f. Fall 2026 semester)",
+   "page": 1
+  }
+ ],
+ "answered_from_context": true,
+ "confidence": "high"
+}
+retrieved:
+  0.8425  fee-structure-page.html :: Tuition Fee (w.e.f. Fall 2026 semester)
+  0.6645  prospectus-2026-academic-rules-and-regulations.pdf :: 4. Semester Course Load
+  0.6526  fee-structure-page.html :: Miscellaneous Fees
+  0.6509  student-handbook-jun-2026.pdf :: 18. It is generally recommended that students only take the
+  0.6503  academic-rules-handbook-jun-2026.pdf :: 1. Introduction > Bachelor’s Degree Requirements
+
+$ kubectl create job --from=cronjob/reindex manual-reindex-1794066017 -n rahbar
+job.batch/manual-reindex-1794066017 created
+
+$ kubectl -n rahbar get job manual-reindex-1794066017
+NAME                        STATUS     COMPLETIONS   DURATION   AGE
+manual-reindex-1794066017   Complete   1/1           7m41s      7m49s
+
+$ kubectl -n rahbar logs job/manual-reindex-1794066017 -c indexer | tail -3
+{"ts": "2026-11-07T15:42:24Z", "logger": "rahbar.indexer", "msg": "chunking summary", "strategy": "structure", "size": 400, "overlap": 50, "chunks": 690, "original_words": 67278, "stored_words": 70006, "amplification": 1.041}
+{"ts": "2026-11-07T15:47:51Z", "logger": "rahbar.indexer", "msg": "embedded", "chunks": 690, "dimension": 768, "model": "nomic-embed-text"}
+{"ts": "2026-11-07T15:47:55Z", "logger": "rahbar.indexer", "msg": "indexer finished", "chunks": 690, "seconds": 454.7}
+
+$ collection_meta
+{"embed_model": "nomic-embed-text", "dimension": 768, "chunk_overlap": 50, "index_version": "20261107T154753Z", "chunk_size": 400}
+
+$ ask 'What is the tuition fee per credit hour for BS programs in 2026-27?' after-reindex
+HTTP/1.1 200 OK
+x-cache: miss
+x-request-id: after-reindex
+{
+ "request_id": "after-reindex",
+ "answer": "Rs. 12,000",
+ "citations": [
+  {
+   "source": "fee-structure-page.html",
+   "section": "Tuition Fee (w.e.f. Fall 2026 semester)",
+   "page": 1
+  }
+ ],
+ "answered_from_context": true,
+ "confidence": "high"
+}
+retrieved:
+  0.8425  fee-structure-page.html :: Tuition Fee (w.e.f. Fall 2026 semester)
+  0.6645  prospectus-2026-academic-rules-and-regulations.pdf :: 4. Semester Course Load
+  0.6526  fee-structure-page.html :: Miscellaneous Fees
+  0.6509  student-handbook-jun-2026.pdf :: 18. It is generally recommended that students only take the
+  0.6503  academic-rules-handbook-jun-2026.pdf :: 1. Introduction > Bachelor’s Degree Requirements
+
+$ kubectl -n rahbar get pod -l job-name=manual-reindex-1794066017 -o jsonpath='{.items[0].status.containerStatuses[0].state.terminated}'; echo
+{"containerID":"containerd://71ee56848fa5dfcfa2652186362d69b67659a6e3581e53777d438c2af93add6a","exitCode":0,"finishedAt":"2026-11-07T15:47:55Z","reason":"Completed","startedAt":"2026-11-07T15:40:20Z"}

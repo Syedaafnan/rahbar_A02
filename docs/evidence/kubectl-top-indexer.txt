@@ -1,0 +1,28 @@
+# kubectl top pods sampled every 15 s while the indexer Job runs (notes Q4)
+# captured 2026-11-07T15:40:17Z on minikube  v1.37.0
+manual-reindex-1794066017-8hzgx   1250m   338Mi   
+manual-reindex-1794066017-8hzgx   1250m   338Mi   
+manual-reindex-1794066017-8hzgx   1250m   338Mi   
+manual-reindex-1794066017-8hzgx   1250m   338Mi   
+manual-reindex-1794066017-8hzgx   1258m   392Mi   
+manual-reindex-1794066017-8hzgx   1258m   392Mi   
+manual-reindex-1794066017-8hzgx   1258m   392Mi   
+manual-reindex-1794066017-8hzgx   1258m   392Mi   
+manual-reindex-1794066017-8hzgx   765m   512Mi   
+manual-reindex-1794066017-8hzgx   765m   512Mi   
+manual-reindex-1794066017-8hzgx   765m   512Mi   
+manual-reindex-1794066017-8hzgx   3m    515Mi   
+manual-reindex-1794066017-8hzgx   3m    515Mi   
+manual-reindex-1794066017-8hzgx   3m    515Mi   
+manual-reindex-1794066017-8hzgx   3m    515Mi   
+manual-reindex-1794066017-8hzgx   3m    518Mi   
+manual-reindex-1794066017-8hzgx   3m    518Mi   
+manual-reindex-1794066017-8hzgx   3m    518Mi   
+manual-reindex-1794066017-8hzgx   4m    521Mi   
+manual-reindex-1794066017-8hzgx   4m    521Mi   
+manual-reindex-1794066017-8hzgx   4m    521Mi   
+manual-reindex-1794066017-8hzgx   4m    521Mi   
+manual-reindex-1794066017-8hzgx   3m    523Mi   
+manual-reindex-1794066017-8hzgx   3m    523Mi   
+manual-reindex-1794066017-8hzgx   3m    523Mi   
+manual-reindex-1794066017-8hzgx   3m    526Mi   
