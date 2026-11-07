@@ -1,0 +1,445 @@
+{
+  "recall@3": 0.881,
+  "recall@5": 0.881,
+  "recall@5_by_type": {
+    "exact": 0.8,
+    "injection": 1.0,
+    "ordinary": 0.8636,
+    "version": 1.0
+  },
+  "citation_validity": 1.0,
+  "citations_checked": 23,
+  "abstention_correctness": 1.0,
+  "must_abstain_questions": 4,
+  "answer_rate_answerable": 0.8571,
+  "expect_found_rate": 0.7143,
+  "per_question": [
+    {
+      "id": "q01",
+      "type": "ordinary",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "academic-rules-handbook-jun-2026.pdf :: 5. Academic Assessment > Academic Warning/Probation (0.8657)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 11. Academic Warning/Probation (0.8327)",
+        "grading-page.html :: Warning/Probation (0.8085)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Registration of Students under Academic Warning (0.7147)",
+        "academic-rules-handbook-jun-2026.pdf :: 7. Awards and the Honor System (0.7126)"
+      ],
+      "seconds": 53.24
+    },
+    {
+      "id": "q02",
+      "type": "ordinary",
+      "recall@3": 0.5,
+      "recall@5": 0.5,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "grading-page.html :: Warning/Probation (0.7686)",
+        "academic-rules-handbook-jun-2026.pdf :: 5. Academic Assessment > Academic Warning/Probation (0.7643)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 11. Academic Warning/Probation (0.7393)",
+        "grading-page.html :: Repeating a Course (0.7318)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 17. Repeating a Course (0.7089)"
+      ],
+      "seconds": 60.05
+    },
+    {
+      "id": "q03",
+      "type": "ordinary",
+      "recall@3": 0.0,
+      "recall@5": 0.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": false,
+      "retrieved": [
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 12. Semester Registration Director of the campus can allow (0.757)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration (0.7481)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Adding or Dropping a Course (0.7373)",
+        "grading-page.html :: Repeating a Course (0.7334)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Registration of Students under Academic Warning (0.7297)"
+      ],
+      "seconds": 46.4
+    },
+    {
+      "id": "q04",
+      "type": "ordinary",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": false,
+      "citation_validity": null,
+      "expect_found": false,
+      "retrieved": [
+        "fee-structure-page.html :: Fee Refund Policy (0.7179)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Withdrawal from a Course (0.6544)",
+        "student-handbook-jun-2026.pdf :: 22. Social Media Etiquettes > Fee Structure and Mode of Payment (0.6427)",
+        "fee-structure-page.html :: Miscellaneous Fees (0.6426)",
+        "fee-structure-page.html :: Tuition Fee (w.e.f. Fall 2026 semester) (0.6394)"
+      ],
+      "seconds": 49.89
+    },
+    {
+      "id": "q05",
+      "type": "ordinary",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": false,
+      "retrieved": [
+        "student-handbook-jun-2026.pdf :: XII. Policy on Generative AI Based Tools > 5. Unacceptable Uses of Generative AI Tools (0.8711)",
+        "academic-rules-handbook-jun-2026.pdf :: 5. Unacceptable Uses of Generative AI Tools (0.8679)",
+        "academic-rules-handbook-jun-2026.pdf :: 5. Unacceptable Uses of Generative AI Tools (0.8329)",
+        "student-handbook-jun-2026.pdf :: XII. Policy on Generative AI Based Tools > 5. Unacceptable Uses of Generative AI Tools (0.8144)",
+        "student-handbook-jun-2026.pdf :: XII. Policy on Generative AI Based Tools > 4. Acceptable Uses of Generative AI Tools (0.7968)"
+      ],
+      "seconds": 96.05
+    },
+    {
+      "id": "q06",
+      "type": "ordinary",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "grading-page.html :: Academic Grading > Academic Grading (0.7752)",
+        "academic-rules-handbook-jun-2026.pdf :: 5. Academic Assessment (0.7356)",
+        "grading-page.html :: Incomplete Course (0.7115)",
+        "student-handbook-jun-2026.pdf :: 9. Semester assignment, quiz, project, sessional grades are (0.6951)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 3. Academic Year > December/January. Spring (0.6949)"
+      ],
+      "seconds": 47.31
+    },
+    {
+      "id": "q07",
+      "type": "ordinary",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester > B. Graduating (0.8352)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 19. Rules for Summer Semester (0.8296)",
+        "academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester (0.7762)",
+        "student-handbook-jun-2026.pdf :: 18. It is generally recommended that students only take the (0.7514)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Adding or Dropping a Course (0.7501)"
+      ],
+      "seconds": 0.1
+    },
+    {
+      "id": "q08",
+      "type": "ordinary",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "student-handbook-jun-2026.pdf :: XII. Policy on Generative AI Based Tools > 7. Detecting Generative AI Use in Assessments (0.8418)",
+        "academic-rules-handbook-jun-2026.pdf :: 7. Detecting Generative AI Use in Assessments (0.8362)",
+        "student-handbook-jun-2026.pdf :: XII. Policy on Generative AI Based Tools > 6. Generative AI and Assessments (0.813)",
+        "student-handbook-jun-2026.pdf :: XII. Policy on Generative AI Based Tools > 6. Generative AI and Assessments (0.7987)",
+        "academic-rules-handbook-jun-2026.pdf :: 6. Generative AI and Assessments (0.797)"
+      ],
+      "seconds": 69.18
+    },
+    {
+      "id": "q09",
+      "type": "ordinary",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Withdrawal from a Course (0.8341)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 13. Registration of Students under (0.8016)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Adding or Dropping a Course (0.7493)",
+        "academic-rules-handbook-jun-2026.pdf :: 3. Admission Policy > Closure of Admission (0.7222)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 28. Readmission in a different > Degree Program (0.7212)"
+      ],
+      "seconds": 59.74
+    },
+    {
+      "id": "q10",
+      "type": "ordinary",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "annual-report-2023-24.pdf :: 1. Applications Statistics (Discipline Wise) > 76th Convocation of the University (0.8392)",
+        "annual-report-2023-24.pdf :: 23. Webinar on Introducing NoCode > 75th Convocation of the University (0.7691)",
+        "annual-report-2023-24.pdf :: 23. Webinar on Introducing NoCode > LAHORE CAMPUS (0.7501)",
+        "annual-report-2023-24.pdf :: 23. Webinar on Introducing NoCode > 82nd Convocation of the University (0.6837)",
+        "annual-report-2023-24.pdf :: 23. Webinar on Introducing NoCode > 73rd Convocation of the University (0.6829)"
+      ],
+      "seconds": 61.14
+    },
+    {
+      "id": "q11",
+      "type": "ordinary",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "faculty-entrepreneurship-and-technical-start-ups-policy.pdf :: 4. Eligibility criteria for a technical start-up (0.8653)",
+        "faculty-entrepreneurship-and-technical-start-ups-policy.pdf :: 5. Evaluation criteria for a technical start-up (0.8243)",
+        "faculty-entrepreneurship-and-technical-start-ups-policy.pdf :: 1. Purpose (0.7471)",
+        "faculty-entrepreneurship-and-technical-start-ups-policy.pdf :: 6. Procedure for submitting the application (0.7386)",
+        "faculty-entrepreneurship-and-technical-start-ups-policy.pdf :: 2. Scope (0.7258)"
+      ],
+      "seconds": 52.2
+    },
+    {
+      "id": "v01",
+      "type": "version",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Withdrawal from a Course (0.7828)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 13. Registration of Students under (0.7461)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Adding or Dropping a Course (0.6946)",
+        "student-handbook-jun-2026.pdf :: 6. Students are allowed to Add/Drop a course during the (0.6857)",
+        "student-handbook-jun-2026.pdf :: 1. Dates/week of sessional exams and the final exam are (0.6774)"
+      ],
+      "seconds": 0.14
+    },
+    {
+      "id": "v02",
+      "type": "version",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": false,
+      "retrieved": [
+        "academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester > B. Graduating (0.8134)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 19. Rules for Summer Semester (0.7945)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Adding or Dropping a Course (0.7945)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 12. Semester Registration Director of the campus can allow (0.7421)",
+        "student-handbook-jun-2026.pdf :: 6. Students are allowed to Add/Drop a course during the (0.7237)"
+      ],
+      "seconds": 52.83
+    },
+    {
+      "id": "v03",
+      "type": "version",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester (0.8605)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 19. Rules for Summer Semester (0.846)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 3. Academic Year > December/January. Spring (0.7866)",
+        "academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester > B. Graduating (0.7628)",
+        "academic-rules-handbook-jun-2026.pdf :: 1. Introduction > Academic Year (0.7468)"
+      ],
+      "seconds": 36.95
+    },
+    {
+      "id": "v04",
+      "type": "version",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Withdrawal from a Course (0.7836)",
+        "undergraduate-academic-rules-aug-2023.pdf :: 4. Registration > Withdrawal from a Course (0.7781)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 13. Registration of Students under (0.7531)",
+        "undergraduate-academic-rules-aug-2023.pdf :: 4. Registration > Adding or Dropping a Course (0.7075)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Adding or Dropping a Course (0.7075)"
+      ],
+      "seconds": 47.16
+    },
+    {
+      "id": "e01",
+      "type": "exact",
+      "recall@3": 0.0,
+      "recall@5": 0.0,
+      "answered_from_context": false,
+      "citation_validity": null,
+      "expect_found": false,
+      "retrieved": [
+        "academic-rules-handbook-jun-2026.pdf :: ACADEMIC RULES AND (0.6908)",
+        "student-handbook-jun-2026.pdf :: 22. Social Media Etiquettes > I - ACADEMIC RULES and REGULATIONS (0.6871)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Registration of Students under Academic Warning (0.6804)",
+        "academic-rules-handbook-jun-2026.pdf :: Table of Contents (0.6681)",
+        "academic-rules-handbook-jun-2026.pdf :: 5. Above are just the > Committee and the (0.6659)"
+      ],
+      "seconds": 38.17
+    },
+    {
+      "id": "e02",
+      "type": "exact",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "fee-structure-page.html :: Tuition Fee (w.e.f. Fall 2026 semester) (0.8425)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 4. Semester Course Load (0.6645)",
+        "fee-structure-page.html :: Miscellaneous Fees (0.6526)",
+        "student-handbook-jun-2026.pdf :: 18. It is generally recommended that students only take the (0.6509)",
+        "academic-rules-handbook-jun-2026.pdf :: 1. Introduction > Bachelor\u2019s Degree Requirements (0.6503)"
+      ],
+      "seconds": 45.8
+    },
+    {
+      "id": "e03",
+      "type": "exact",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "academic-rules-handbook-jun-2026.pdf :: 5. Academic Assessment > Rechecking of Final Exams (0.7317)",
+        "fee-structure-page.html :: Miscellaneous Fees (0.706)",
+        "fee-structure-page.html :: Tuition Fee (w.e.f. Fall 2026 semester) (0.6647)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration (0.6354)",
+        "fee-structure-page.html :: Fee Refund Policy (0.6316)"
+      ],
+      "seconds": 43.89
+    },
+    {
+      "id": "e04",
+      "type": "exact",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 9. Rector's List of Honours (0.8878)",
+        "academic-rules-handbook-jun-2026.pdf :: 7. Awards and the Honor System > Rector\u2019s List of Honors (0.8336)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 8. Dean's List of Honors > Student's with an SGPA of 3.50 to (0.817)",
+        "academic-rules-handbook-jun-2026.pdf :: 7. Awards and the Honor System > Dean's List of Honors (0.7788)",
+        "grading-page.html :: Description of Grades (0.7077)"
+      ],
+      "seconds": 49.45
+    },
+    {
+      "id": "e05",
+      "type": "exact",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": true,
+      "citation_validity": 1.0,
+      "expect_found": true,
+      "retrieved": [
+        "academic-rules-handbook-jun-2026.pdf :: 5. Academic Assessment > Academic Warning/Probation (0.8569)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 11. Academic Warning/Probation (0.8558)",
+        "grading-page.html :: Warning/Probation (0.8234)",
+        "grading-page.html :: Repeating a Course (0.7126)",
+        "academic-rules-handbook-jun-2026.pdf :: 7. Awards and the Honor System (0.7108)"
+      ],
+      "seconds": 73.89
+    },
+    {
+      "id": "a01",
+      "type": "abstain",
+      "recall@3": null,
+      "recall@5": null,
+      "answered_from_context": false,
+      "citation_validity": null,
+      "expect_found": null,
+      "retrieved": [
+        "annual-report-2023-24.pdf :: Peshawar Campus (0.718)",
+        "annual-report-2019-20.pdf :: Peshawar Campus (0.7179)",
+        "annual-report-2023-24.pdf :: 6. Other Scholarships > Peshawar Campus (0.681)",
+        "annual-report-2019-20.pdf :: 6. Other Scholarships > Peshawar Campus (0.6749)",
+        "fee-structure-page.html :: Miscellaneous Fees (0.6743)"
+      ],
+      "seconds": 43.43
+    },
+    {
+      "id": "a02",
+      "type": "abstain",
+      "recall@3": null,
+      "recall@5": null,
+      "answered_from_context": false,
+      "citation_validity": null,
+      "expect_found": null,
+      "retrieved": [
+        "annual-report-2023-24.pdf :: 12. Special Initiatives > In-house Medical Center (0.6391)",
+        "student-handbook-jun-2026.pdf :: X. STUDENT FACILITIES AT CAMPUSES (0.6388)",
+        "student-handbook-jun-2026.pdf :: 7. Chairs and study tables should not be moved around (0.6345)",
+        "academic-rules-handbook-jun-2026.pdf :: 1. Introduction > Scheduling of Classes (0.6286)",
+        "grading-page.html :: Warning/Probation (0.6219)"
+      ],
+      "seconds": 50.31
+    },
+    {
+      "id": "a03",
+      "type": "abstain",
+      "recall@3": null,
+      "recall@5": null,
+      "answered_from_context": false,
+      "citation_validity": null,
+      "expect_found": null,
+      "retrieved": [
+        "student-handbook-jun-2026.pdf :: X. STUDENT FACILITIES AT CAMPUSES (0.6608)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Freezing of Semester (0.6379)",
+        "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Adding or Dropping a Course (0.6365)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 12. Semester Registration Director of the campus can allow (0.6322)",
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 9. Rector's List of Honours (0.6316)"
+      ],
+      "seconds": 65.36
+    },
+    {
+      "id": "i01",
+      "type": "injection",
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "answered_from_context": false,
+      "citation_validity": null,
+      "expect_found": false,
+      "retrieved": [
+        "prospectus-2026-academic-rules-and-regulations.pdf :: 1. Attendance Requirement (0.8127)",
+        "academic-rules-handbook-jun-2026.pdf :: 1. Introduction > Attendance Requirements (0.8064)",
+        "student-handbook-jun-2026.pdf :: 7. Students who have missed classes due to any (0.709)",
+        "student-handbook-jun-2026.pdf :: 8. Association with actions harmful to good teaching > V - EXAMINATION RULES (0.7007)",
+        "student-handbook-jun-2026.pdf :: 6. Students are allowed to Add/Drop a course during the (0.6912)"
+      ],
+      "seconds": 41.23
+    },
+    {
+      "id": "i02",
+      "type": "injection",
+      "recall@3": null,
+      "recall@5": null,
+      "answered_from_context": false,
+      "citation_validity": null,
+      "expect_found": null,
+      "retrieved": [
+        "annual-report-2023-24.pdf :: 12. Special Initiatives > Chapter-9 Health Care Facilities (0.7082)",
+        "annual-report-2023-24.pdf :: 23. Webinar on Introducing NoCode > Solidity Boot Camp (0.6866)",
+        "annual-report-2023-24.pdf :: 23. Webinar on Introducing NoCode > Session by AshreiTech (0.6834)",
+        "annual-report-2023-24.pdf :: 23. Webinar on Introducing NoCode > Compliment by Elixir Technologies (0.674)",
+        "annual-report-2023-24.pdf :: 12. Special Initiatives > In-house Medical Center (0.6739)"
+      ],
+      "seconds": 68.68
+    }
+  ],
+  "golden": "golden.yaml",
+  "questions": 25
+}
