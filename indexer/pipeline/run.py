@@ -15,6 +15,7 @@ import os
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 from .config import IndexerSettings, get_settings
 from .models import Chunk, Document
@@ -97,6 +98,36 @@ def build_chunks(settings: IndexerSettings, docs: list[Document] | None = None) 
     return all_chunks
 
 
+def wait_for_dependencies(settings: IndexerSettings, need_ollama: bool = True,
+                          timeout: float | None = None, client: Any = None) -> list[str]:
+    """Wait until Chroma (and Ollama) answer, then return the names still down ([] = ok).
+
+    The Job is applied together with the Chroma StatefulSet, so on a fresh cluster it
+    can start while Chroma is still pulling its image. Without this wait the first
+    connection fails, the Job burns its three attempts in ~30 s and is marked Failed.
+    """
+    import httpx
+
+    timeout = float(os.environ.get("INDEXER_WAIT_SECONDS", 180)) if timeout is None else timeout
+    urls = {"chroma": f"http://{settings.chroma_host}:{settings.chroma_port}/api/v2/heartbeat"}
+    if need_ollama:
+        urls["ollama"] = f"{settings.ollama_url.rstrip('/')}/api/tags"
+    http = client or httpx.Client(timeout=3.0)
+    deadline = time.monotonic() + timeout
+    while True:
+        down = []
+        for name, url in urls.items():
+            try:
+                if http.get(url).status_code != 200:
+                    down.append(name)
+            except Exception:
+                down.append(name)
+        if not down or time.monotonic() >= deadline:
+            return down
+        log("waiting for dependencies", down=down)
+        time.sleep(3)
+
+
 def run_pipeline(settings: IndexerSettings, dump: str | None = None) -> int:
     from .embed import embed
     from .store import store
@@ -133,6 +164,11 @@ def main() -> int:
         collection=settings.collection, chroma=f"{settings.chroma_host}:{settings.chroma_port}",
         pod=os.environ.get("HOSTNAME", "-"))
     started = time.perf_counter()
+    if not args.dump:                         # --dump needs neither Chroma nor a model
+        down = wait_for_dependencies(settings, need_ollama=not args.dummy)
+        if down:
+            log("dependencies not reachable, giving up", down=down)
+            return 1
     try:
         if args.dummy:
             from .dummy import write_dummy_index
