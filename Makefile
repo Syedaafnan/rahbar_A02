@@ -4,9 +4,15 @@
 SHELL := /bin/bash
 NS ?= rahbar
 TAG ?= dev
-PY ?= python3
 VENV ?= .venv
+# Windows venvs keep their programs in Scripts/, Linux and macOS in bin/.
+ifeq ($(OS),Windows_NT)
+PY ?= python
+BIN := $(abspath $(VENV))/Scripts
+else
+PY ?= python3
 BIN := $(abspath $(VENV))/bin
+endif
 # The Ingress address. On Linux this is the minikube IP. On macOS or Windows with the
 # docker driver, run `minikube tunnel` in another terminal and use INGRESS_IP=127.0.0.1.
 INGRESS_IP ?= $(shell minikube ip 2>/dev/null)
@@ -42,11 +48,15 @@ cluster: ## start minikube with Calico, then enable metrics-server and ingress
 
 images: ## build the three images and load them into minikube (needs yours: Dockerfiles)
 	docker build -t rahbar-api:$(TAG) api
-	docker build -t rahbar-indexer:$(TAG) indexer
+	docker build -t rahbar-indexer:$(TAG) --build-context corpus=corpus --build-context fixtures=eval/fixtures indexer
 	docker build -t rahbar-ui:$(TAG) ui
-	minikube image load rahbar-api:$(TAG)
-	minikube image load rahbar-indexer:$(TAG)
-	minikube image load rahbar-ui:$(TAG)
+	# Load as single-platform tarballs: with Docker Desktop's containerd image store,
+	# loading the image by name can hand minikube a multi-platform index it unpacks badly
+	# ("exec format error" in the pod).
+	for i in api indexer ui; do \
+	  docker save --platform linux/amd64 -o rahbar-$$i.tar rahbar-$$i:$(TAG) && \
+	  minikube image load rahbar-$$i.tar && rm -f rahbar-$$i.tar; \
+	done
 
 apply: ## apply the dev overlay (needs yours: manifests)
 	kubectl apply -k k8s/overlays/dev
