@@ -93,7 +93,9 @@ jobs:
         with: { name: images }
       - run: gunzip -c images.tar.gz | docker load
       - name: trivy (fail on HIGH/CRITICAL that have a fix)
-        uses: aquasecurity/trivy-action@0.28.0
+        # Pinned to the commit of release v0.36.0: a tag can be moved or deleted
+        # (the old 0.28.0 tag no longer exists), a commit SHA cannot.
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ${{ matrix.image }}:ci
           severity: HIGH,CRITICAL
