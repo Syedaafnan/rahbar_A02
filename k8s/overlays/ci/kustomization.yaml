@@ -1,0 +1,31 @@
+# CI and CD on a throwaway kind cluster (section 6).
+# Same base manifests, three differences, all in this folder:
+#   1. the indexer indexes the small fixture corpus baked into its image (no download)
+#   2. the api uses the stub LLM provider: no model, no key, deterministic answers
+#   3. OLLAMA_URL points at an Ollama container on the kind network (embeddings only)
+# scripts/kind-e2e.sh fills in OLLAMA_URL and the image tags before applying this.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+  - name: rahbar-config
+    behavior: merge
+    envs:
+      - ci.env
+patches:
+  # The fixtures are already in the image at /app/fixtures: skip the corpus download.
+  - target: { kind: Job, name: indexer }
+    patch: |-
+      - op: remove
+        path: /spec/template/spec/initContainers
+  - target: { kind: CronJob, name: reindex }
+    patch: |-
+      - op: remove
+        path: /spec/jobTemplate/spec/template/spec/initContainers
+images:
+  - { name: rahbar-api, newTag: ci }
+  - { name: rahbar-ui, newTag: ci }
+  - { name: rahbar-indexer, newTag: ci }
