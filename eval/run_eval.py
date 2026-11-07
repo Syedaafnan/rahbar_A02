@@ -39,8 +39,18 @@ def load_golden(path: Path) -> list[dict]:
 
 
 def ask(client: httpx.Client, api: str, question: str) -> dict:
-    """POST one question and return the AskResponse as a dict (see api/app/schemas.py)."""
-    response = client.post(f"{api.rstrip('/')}/api/ask", json={"question": question})
+    """POST one question and return the AskResponse as a dict (see api/app/schemas.py).
+
+    502/503/504 come from the Ingress, not the api: right after a rollout the
+    controller can still be catching up with the new pod endpoints. Those are retried
+    a few times; any other error (and the api's own answers) is final.
+    """
+    for attempt in range(6):
+        response = client.post(f"{api.rstrip('/')}/api/ask", json={"question": question})
+        if response.status_code not in (502, 503, 504) or attempt == 5:
+            break
+        print(f"  ingress returned {response.status_code}, retrying in 5 s")
+        time.sleep(5)
     response.raise_for_status()
     return response.json()
 
