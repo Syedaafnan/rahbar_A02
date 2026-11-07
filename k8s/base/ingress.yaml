@@ -7,8 +7,10 @@ metadata:
   name: rahbar
   labels: { app.kubernetes.io/part-of: rahbar }
   annotations:
-    # A CPU-only model can take tens of seconds to answer; the default 60 s is tight.
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    # A CPU-only model needs up to ~150 s per attempt, and the api retries once:
+    # the default 60 s would cut answers off with a 504.
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "360"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "360"
     nginx.ingress.kubernetes.io/proxy-body-size: "16k"
 spec:
   ingressClassName: nginx
