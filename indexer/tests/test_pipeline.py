@@ -17,7 +17,7 @@ from pipeline.config import get_settings
 from pipeline.embed import DOCUMENT_PREFIX, embed
 from pipeline.extract import extract, find_gutter, html_to_text, strip_front_matter
 from pipeline.models import Chunk, Document, Page
-from pipeline.run import build_chunks
+from pipeline.run import build_chunks, wait_for_dependencies
 from pipeline.store import store
 
 FIXTURES = Path(__file__).resolve().parents[2] / "eval" / "fixtures"
@@ -251,3 +251,27 @@ def test_reindex_with_new_model_rebuilds_the_collection() -> None:
 def test_store_rejects_mismatched_vectors() -> None:
     with pytest.raises(ValueError):
         store(_chunks("a", "b"), [[0.1]], get_settings(), client=FakeClient())
+
+
+# ------------------------------------------------------------ waiting for dependencies
+
+def _http(up: set[str]) -> httpx.Client:
+    """A fake HTTP client: hosts in `up` answer 200, every other host refuses."""
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.host in up:
+            return httpx.Response(200, json={})
+        raise httpx.ConnectError("refused", request=request)
+    return httpx.Client(transport=httpx.MockTransport(handler))
+
+
+def test_wait_returns_nothing_down_when_chroma_and_ollama_answer() -> None:
+    settings = replace(get_settings(), chroma_host="chroma", ollama_url="http://ollama:11434")
+    assert wait_for_dependencies(settings, timeout=0, client=_http({"chroma", "ollama"})) == []
+
+
+def test_wait_names_what_is_still_down_after_the_timeout() -> None:
+    settings = replace(get_settings(), chroma_host="chroma", ollama_url="http://ollama:11434")
+    assert wait_for_dependencies(settings, timeout=0, client=_http({"ollama"})) == ["chroma"]
+    # the dummy index needs no model, so only Chroma is checked
+    assert wait_for_dependencies(settings, need_ollama=False, timeout=0,
+                                 client=_http({"chroma"})) == []
