@@ -1,0 +1,57 @@
+# One ConfigMap, read by BOTH the api and the indexer (section 4.1). EMBED_MODEL lives
+# here and nowhere else: it is the pin. Changing a value needs a rollout restart, never
+# an image rebuild.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rahbar-config
+  labels:
+    app.kubernetes.io/part-of: rahbar
+data:
+  # --- implementations -------------------------------------------------------
+  RETRIEVER: "chroma"
+  LLM_PROVIDER: "ollama-host"          # stub | ollama-host | ollama-incluster | hosted
+  LLM_MODEL: "llama3.2:3b"
+  OLLAMA_URL: "http://host.minikube.internal:11434"
+  HOSTED_BASE_URL: "https://api.groq.com/openai/v1"
+
+  # --- the embedding pin (section 4.4) ---------------------------------------
+  # The indexer writes this into the Chroma collection metadata; the api refuses to
+  # become ready if the two disagree.
+  EMBED_MODEL: "nomic-embed-text"
+
+  # --- vector store and cache ------------------------------------------------
+  CHROMA_HOST: "chroma"
+  CHROMA_PORT: "8000"
+  CHROMA_COLLECTION: "rahbar"
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+
+  # --- indexing (unit: approximate tokens; measured in docs/PIPELINE.md) ------
+  CHUNK_SIZE: "400"
+  CHUNK_OVERLAP: "50"
+  CORPUS_DIR: "/corpus"
+
+  # --- querying --------------------------------------------------------------
+  TOP_K: "5"
+  # Below this cosine similarity a passage is not evidence; if nothing clears it the
+  # api abstains without calling the model (section 3.4). 0.60 sits below every
+  # answerable golden question's best passage (lowest 0.69) and above off-topic
+  # questions on the fixtures (0.56); see docs/PIPELINE.md, "Relevance floor".
+  RELEVANCE_FLOOR: "0.60"
+  # Prompt budget for a CPU-only model (~22 prompt tokens/s measured on our laptop):
+  # retrieval still returns TOP_K passages, but only the best 3 above the floor go to
+  # the LLM, each cut to 180 words (~1,000 prompt tokens, ~75 s instead of >150 s).
+  LLM_CONTEXT_PASSAGES: "3"
+  LLM_PASSAGE_WORDS: "180"
+  LLM_TIMEOUT_SECONDS: "150"
+  # Semantic cache hit threshold: the lowest value with zero false hits on
+  # eval/cache_pairs.yaml. 0.95 is ruled out: "...warning in MS programs?" and
+  # "...in BS programs?" score 0.9521 and need different answers (docs/PIPELINE.md).
+  CACHE_THRESHOLD: "0.96"
+  CACHE_TTL_SECONDS: "86400"
+  # 0.1: answers are facts extracted into strict JSON; we want the same answer for
+  # the same evidence, not creativity. (0 to 0.3 is the band from section 3.4.)
+  TEMPERATURE: "0.1"
+
+  LOG_LEVEL: "INFO"

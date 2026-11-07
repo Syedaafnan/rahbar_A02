@@ -1,0 +1,48 @@
+# Embedding pin (section 4.4): EMBED_MODEL changed on the api only, then restored
+# captured 2026-11-07T15:27:35Z on minikube  v1.37.0
+
+$ collection_meta
+{"chunk_size": 400, "hnsw:space": "cosine", "index_version": "20261107T044259Z", "embed_model": "nomic-embed-text", "dimension": 768, "chunk_overlap": 50}
+
+$ kubectl -n rahbar patch configmap rahbar-config --type merge -p '{"data":{"EMBED_MODEL":"all-minilm"}}'
+configmap/rahbar-config patched
+
+$ kubectl -n rahbar rollout restart deployment/api
+deployment.apps/api restarted
+
+$ kubectl -n rahbar get pods -l app.kubernetes.io/name=api
+NAME                   READY   STATUS    RESTARTS   AGE
+api-66bfcfb9c6-gmb8q   1/1     Running   0          56m
+api-66bfcfb9c6-hmffv   1/1     Running   0          56m
+api-66bfcfb9c6-s6kqm   1/1     Running   0          56m
+api-7bf7bcdc5b-wt2g4   0/1     Running   0          61s
+
+$ kubectl -n rahbar logs api-7bf7bcdc5b-wt2g4 | grep -m1 'not ready'
+{"ts": "2026-11-07T15:27:42Z", "level": "ERROR", "logger": "rahbar.readiness", "msg": "not ready", "request_id": "-", "failed": {"embedding": "embedding model mismatch: index built with 'nomic-embed-text' (dimension 768), api configured with EMBED_MODEL='all-minilm'. Re-run the indexer or fix the ConfigMap."}}
+
+$ kubectl -n rahbar describe pod api-7bf7bcdc5b-wt2g4 | grep -E 'Readiness probe failed|Ready:' | head -3
+    Ready:          False
+  Warning  Unhealthy  5s (x7 over 55s)  kubelet            Readiness probe failed: HTTP probe failed with statuscode: 503
+
+$ echo '--- old pods keep serving meanwhile (maxUnavailable: 0):'; kubectl -n rahbar rollout status deployment/api --timeout=5s || true
+--- old pods keep serving meanwhile (maxUnavailable: 0):
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+error: timed out waiting for the condition
+
+$ kubectl -n rahbar patch configmap rahbar-config --type merge -p '{"data":{"EMBED_MODEL":"nomic-embed-text"}}'
+configmap/rahbar-config patched
+
+$ kubectl -n rahbar rollout restart deployment/api
+deployment.apps/api restarted
+
+$ kubectl -n rahbar rollout status deployment/api --timeout=300s
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out

@@ -1,0 +1,28 @@
+# One host, two paths: / to the ui, /api to the api (the prefix is kept, because
+# the api's routes live under /api). Enable the controller with
+#   minikube addons enable ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rahbar
+  labels: { app.kubernetes.io/part-of: rahbar }
+  annotations:
+    # A CPU-only model needs up to ~150 s per attempt, and the api retries once:
+    # the default 60 s would cut answers off with a 504.
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "360"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "360"
+    nginx.ingress.kubernetes.io/proxy-body-size: "16k"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: rahbar.local
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service: { name: api, port: { name: http } }
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: ui, port: { name: http } }

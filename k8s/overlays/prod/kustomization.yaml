@@ -1,0 +1,18 @@
+# Published images from Docker Hub, deployed by commit SHA, never :latest (section 6).
+# cd.yml rewrites the three entries below before applying:
+#   kustomize edit set image rahbar-api=docker.io/$DOCKERHUB_USER/rahbar-api:$GITHUB_SHA ...
+# The committed values are placeholders so `kustomize build | kubeconform` can run.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - name: rahbar-api
+    newName: docker.io/rahbar/rahbar-api
+    newTag: "0000000000000000000000000000000000000000"
+  - name: rahbar-ui
+    newName: docker.io/rahbar/rahbar-ui
+    newTag: "0000000000000000000000000000000000000000"
+  - name: rahbar-indexer
+    newName: docker.io/rahbar/rahbar-indexer
+    newTag: "0000000000000000000000000000000000000000"

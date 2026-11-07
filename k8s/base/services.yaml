@@ -1,0 +1,45 @@
+# Four Services, all ClusterIP (section 4.1). The data tier (chroma, redis) is never
+# NodePort or LoadBalancer: only the Ingress is reachable from outside the cluster.
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  labels: { app.kubernetes.io/name: api, app.kubernetes.io/part-of: rahbar }
+spec:
+  type: ClusterIP
+  selector: { app.kubernetes.io/name: api }
+  ports:
+    - { name: http, port: 8000, targetPort: http }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui
+  labels: { app.kubernetes.io/name: ui, app.kubernetes.io/part-of: rahbar }
+spec:
+  type: ClusterIP
+  selector: { app.kubernetes.io/name: ui }
+  ports:
+    - { name: http, port: 8080, targetPort: http }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chroma
+  labels: { app.kubernetes.io/name: chroma, app.kubernetes.io/part-of: rahbar }
+spec:
+  type: ClusterIP
+  selector: { app.kubernetes.io/name: chroma }
+  ports:
+    - { name: http, port: 8000, targetPort: http }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels: { app.kubernetes.io/name: redis, app.kubernetes.io/part-of: rahbar }
+spec:
+  type: ClusterIP
+  selector: { app.kubernetes.io/name: redis }
+  ports:
+    - { name: redis, port: 6379, targetPort: redis }

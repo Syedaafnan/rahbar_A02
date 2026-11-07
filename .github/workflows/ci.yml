@@ -1,0 +1,142 @@
+# CI: every pull request to main and every push to dev (section 6).
+#   lint ─┐
+#   test ─┼─> build ─┬─> scan
+#   manifests ┘      └─> e2e-eval   (kind cluster, fixture corpus, the section 5.4 gate)
+# Nothing here pushes an image.
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [dev]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  KUSTOMIZE_VERSION: "5.6.0"
+  KUBECONFORM_VERSION: "0.7.0"
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}", cache: pip }
+      - run: pip install -r api/requirements-dev.txt -r indexer/requirements-dev.txt
+      - name: ruff
+        run: ruff check api indexer eval corpus
+      - name: mypy
+        run: |
+          (cd api && mypy app)
+          (cd indexer && mypy pipeline)
+
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}", cache: pip }
+      - run: pip install -r api/requirements-dev.txt -r indexer/requirements-dev.txt
+      # Stub retriever and stub provider only: no network, no model.
+      - name: pytest api (coverage >= 60%)
+        run: cd api && pytest -q --cov=app --cov-fail-under=60
+      - name: pytest indexer (coverage >= 60%)
+        run: cd indexer && pytest -q --cov=pipeline --cov-fail-under=60
+
+  manifests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: install kustomize and kubeconform
+        run: |
+          curl -sSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" | sudo tar xz -C /usr/local/bin
+          curl -sSL "https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" | sudo tar xz -C /usr/local/bin
+      - name: kustomize build | kubeconform -strict
+        run: |
+          for overlay in prod dev ci; do
+            echo "--- $overlay"
+            kustomize build "k8s/overlays/$overlay" | kubeconform -strict -summary -
+          done
+
+  build:
+    needs: [lint, test, manifests]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: build the three images (not pushed)
+        run: |
+          docker build -t rahbar-api:ci api
+          docker build -t rahbar-ui:ci ui
+          docker build -t rahbar-indexer:ci \
+            --build-context corpus=corpus --build-context fixtures=eval/fixtures indexer
+          docker save rahbar-api:ci rahbar-ui:ci rahbar-indexer:ci | gzip > images.tar.gz
+      - uses: actions/upload-artifact@v4
+        with: { name: images, path: images.tar.gz, retention-days: 1 }
+
+  scan:
+    needs: build
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [rahbar-api, rahbar-ui, rahbar-indexer]
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: images }
+      - run: gunzip -c images.tar.gz | docker load
+      - name: trivy (fail on HIGH/CRITICAL that have a fix)
+        # Pinned to the commit of release v0.36.0: a tag can be moved or deleted
+        # (the old 0.28.0 tag no longer exists), a commit SHA cannot.
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ matrix.image }}:ci
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          format: table
+
+  e2e-eval:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}" }
+      - run: pip install httpx==0.28.1 pyyaml==6.0.2
+      - name: install kustomize
+        run: curl -sSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" | sudo tar xz -C /usr/local/bin
+      - uses: actions/download-artifact@v4
+        with: { name: images }
+      - run: gunzip -c images.tar.gz | docker load
+      - name: create a kind cluster
+        uses: helm/kind-action@v1.12.0
+        with:
+          cluster_name: kind
+          config: .github/kind-config.yaml
+      - name: load the images into kind
+        run: for i in api ui indexer; do kind load docker-image "rahbar-$i:ci" --name kind; done
+      - name: apply manifests, run the indexer Job, wait for rollouts
+        run: bash scripts/kind-e2e.sh rahbar ci
+      - name: evaluate through the Ingress and enforce the gate
+        run: |
+          python eval/run_eval.py --api http://localhost --host rahbar.local \
+            --golden eval/fixtures/golden.fixture.yaml \
+            --baseline eval/fixtures/baseline.fixture.json \
+            --out fixture-results.json
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: fixture-results, path: fixture-results.json, if-no-files-found: ignore }
+      - name: diagnostics on failure
+        if: failure()
+        run: |
+          kubectl -n rahbar get pods -o wide || true
+          kubectl -n rahbar describe pods | tail -80 || true
+          kubectl -n rahbar logs deploy/api --tail=80 || true

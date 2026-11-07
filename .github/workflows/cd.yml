@@ -1,0 +1,79 @@
+# CD: every push to main (that is, every merged pull request).
+#   test -> build-push (Docker Hub, tagged with the commit SHA) -> deploy (kind + smoke test)
+# Repository secrets needed (Settings > Secrets and variables > Actions):
+#   DOCKERHUB_USERNAME   your Docker Hub user name
+#   DOCKERHUB_TOKEN      a Docker Hub ACCESS TOKEN (Account settings > Personal access
+#                        tokens), never your password
+name: cd
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-main
+  cancel-in-progress: false
+
+env:
+  PYTHON_VERSION: "3.12"
+  KUSTOMIZE_VERSION: "5.6.0"
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}", cache: pip }
+      - run: pip install -r api/requirements-dev.txt -r indexer/requirements-dev.txt
+      - run: cd api && pytest -q --cov=app --cov-fail-under=60
+      - run: cd indexer && pytest -q --cov=pipeline --cov-fail-under=60
+
+  build-push:
+    needs: test                     # never publish an image built from failing code
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: build and push, tagged with the commit SHA (never :latest)
+        env:
+          REPO: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/rahbar
+          SHA: ${{ github.sha }}
+        run: |
+          docker build -t "$REPO-api:$SHA" api
+          docker build -t "$REPO-ui:$SHA" ui
+          docker build -t "$REPO-indexer:$SHA" \
+            --build-context corpus=corpus --build-context fixtures=eval/fixtures indexer
+          for i in api ui indexer; do docker push "$REPO-$i:$SHA"; done
+
+  deploy:
+    needs: build-push               # deploy only what was just tested and published
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: install kustomize
+        run: curl -sSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" | sudo tar xz -C /usr/local/bin
+      - name: create an ephemeral kind cluster
+        uses: helm/kind-action@v1.12.0
+        with:
+          cluster_name: kind
+          config: .github/kind-config.yaml
+      - name: deploy the images for ${{ github.sha }} and wait for kubectl rollout status
+        run: bash scripts/kind-e2e.sh "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/rahbar" "${{ github.sha }}"
+      - name: smoke test through the Ingress
+        run: |
+          set -e
+          curl -sf -H "Host: rahbar.local" http://localhost/ | grep -qi "<html"
+          body=$(curl -sf -H "Host: rahbar.local" -H "Content-Type: application/json" \
+                 -H "X-Request-ID: smoke-${{ github.sha }}" \
+                 -d '{"question":"What is the minimum attendance needed to sit the final exam?"}' \
+                 http://localhost/api/ask)
+          echo "$body"
+          echo "$body" | python3 -c 'import json,sys; r=json.load(sys.stdin); assert r["request_id"].startswith("smoke-"); assert r["retrieved"], "nothing retrieved"; print("smoke test passed")'
+          echo "running image: $(kubectl -n rahbar get deploy api -o jsonpath='{.spec.template.spec.containers[0].image}')"

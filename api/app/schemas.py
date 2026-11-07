@@ -26,6 +26,9 @@ class Passage(BaseModel):
     section: str
     page: int | None = None
     score: float = Field(description="Similarity, higher is closer (1 - cosine distance).")
+    # Internal only (never in AskResponse): lets the prompt label old versions.
+    doc_version: str = ""
+    superseded: bool = False
 
 
 class Citation(BaseModel):

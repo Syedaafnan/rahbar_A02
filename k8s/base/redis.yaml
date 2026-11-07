@@ -1,0 +1,79 @@
+# The semantic cache (ADR 0002). Redis with append-only persistence on a PVC, so a
+# restarted pod keeps its cache instead of re-paying every LLM call.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cache-data
+  labels: { app.kubernetes.io/name: redis, app.kubernetes.io/part-of: rahbar }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  labels: { app.kubernetes.io/name: redis, app.kubernetes.io/part-of: rahbar }
+spec:
+  replicas: 1
+  # Recreate, not RollingUpdate: two pods must never hold the RWO volume at once.
+  strategy: { type: Recreate }
+  selector:
+    matchLabels: { app.kubernetes.io/name: redis }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: redis, app.kubernetes.io/part-of: rahbar }
+    spec:
+      serviceAccountName: rahbar-redis
+      # No CHROMA_PORT=tcp://... style variables from Services: chroma reads every
+      # CHROMA_* variable as config and crashes on them; we use DNS names instead.
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999                # the redis user in the official image
+        runAsGroup: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: redis
+          image: redis:7.4.2-alpine
+          imagePullPolicy: IfNotPresent
+          args:
+            - --appendonly
+            - "yes"
+            - --dir
+            - /data
+            - --maxmemory
+            - 96mb
+            - --maxmemory-policy
+            - allkeys-lru             # a cache may forget; it must not OOM
+          ports:
+            - { name: redis, containerPort: 6379 }
+          resources:
+            requests:
+              cpu: 20m
+              memory: 48Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          livenessProbe:
+            exec: { command: ["redis-cli", "ping"] }
+            periodSeconds: 20
+          readinessProbe:
+            exec: { command: ["redis-cli", "ping"] }
+            periodSeconds: 10
+          volumeMounts:
+            - { name: cache-data, mountPath: /data }
+      volumes:
+        - name: cache-data
+          persistentVolumeClaim: { claimName: cache-data }

@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import sys
 import time
@@ -33,9 +34,13 @@ import httpx
 import yaml
 
 HERE = Path(__file__).resolve().parent
-RAW = HERE / "raw"
+# In the indexer Job's initContainer the image is read-only, so the download folder and
+# the freshly written manifest go to the corpus PVC instead. `--verify` always checks
+# against the committed manifest (MANIFEST), never the freshly written one.
+RAW = Path(os.environ.get("CORPUS_RAW", HERE / "raw"))
 SOURCES = HERE / "sources.yaml"
 MANIFEST = HERE / "MANIFEST.md"
+MANIFEST_OUT = Path(os.environ.get("CORPUS_MANIFEST_OUT", MANIFEST))
 USER_AGENT = "RAHBAR-coursework-fetcher/1.0 (CS4032 student project; one request at a time)"
 PAUSE_SECONDS = 2.0
 DRIVE_VIEW = re.compile(r"https?://drive\.google\.com/file/d/([^/?#]+)")
@@ -94,7 +99,7 @@ def load_sources() -> list[dict]:
 
 def fetch(force: bool) -> int:
     docs = load_sources()
-    RAW.mkdir(exist_ok=True)
+    RAW.mkdir(parents=True, exist_ok=True)
     index_path = RAW / "_index.json"
     previous = {e["name"]: e for e in json.loads(index_path.read_text())} \
         if index_path.exists() else {}
@@ -136,7 +141,7 @@ def fetch(force: bool) -> int:
 
     index_path.write_text(json.dumps(entries, indent=2), encoding="utf-8")
     write_manifest(entries)
-    print(f"\n{len(entries)} documents in corpus/raw, manifest written to corpus/MANIFEST.md")
+    print(f"\n{len(entries)} documents in {RAW}, manifest written to {MANIFEST_OUT}")
     if failures:
         print(f"{len(failures)} failed; fix their URLs in sources.yaml and run again:")
         for name, reason in failures:
@@ -159,7 +164,7 @@ def write_manifest(entries: list[dict]) -> None:
     for e in entries:
         lines.append(f"| {e['name']} | {e['doc_version']} | {'yes' if e['superseded'] else 'no'} "
                      f"| `{e['file']}` | {e['bytes']:,} | `{e['sha256']}` | <{e['url']}> |")
-    MANIFEST.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    MANIFEST_OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def verify() -> int:

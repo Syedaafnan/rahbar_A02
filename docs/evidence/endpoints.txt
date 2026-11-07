@@ -1,0 +1,38 @@
+# The api Service finds its pods by label: 3 IPs, then 4 after scaling (section 4.6)
+# captured 2026-11-07T15:37:04Z on minikube  v1.37.0
+
+$ kubectl -n rahbar get endpointslices -l kubernetes.io/service-name=api
+NAME        ADDRESSTYPE   PORTS   ENDPOINTS                                                  AGE
+api-vk52c   IPv4          8000    10.244.120.116,10.244.120.118,10.244.120.119 + 1 more...   11h
+
+$ kubectl -n rahbar get endpointslices -l kubernetes.io/service-name=api -o jsonpath='{range .items[*].endpoints[*]}{.addresses[0]}  ready={.conditions.ready}  pod={.targetRef.name}{"\n"}{end}'
+10.244.120.116  ready=false  pod=api-69789c5dbf-4jckv
+10.244.120.118  ready=true  pod=api-94546b855-p2sbq
+10.244.120.119  ready=true  pod=api-94546b855-wxbmz
+10.244.120.120  ready=true  pod=api-94546b855-mj8lr
+
+$ kubectl -n rahbar patch hpa api --type merge -p '{"spec":{"minReplicas":4}}'
+horizontalpodautoscaler.autoscaling/api patched
+
+$ kubectl -n rahbar rollout status deployment/api --timeout=180s
+deployment "api" successfully rolled out
+
+$ kubectl -n rahbar get endpointslices -l kubernetes.io/service-name=api -o jsonpath='{range .items[*].endpoints[*]}{.addresses[0]}  ready={.conditions.ready}  pod={.targetRef.name}{"\n"}{end}'
+10.244.120.118  ready=true  pod=api-94546b855-p2sbq
+10.244.120.119  ready=true  pod=api-94546b855-wxbmz
+10.244.120.120  ready=true  pod=api-94546b855-mj8lr
+10.244.120.121  ready=true  pod=api-94546b855-5hfnk
+
+$ kubectl -n rahbar get pods -l app.kubernetes.io/name=api -o wide
+NAME                  READY   STATUS    RESTARTS   AGE   IP               NODE       NOMINATED NODE   READINESS GATES
+api-94546b855-5hfnk   1/1     Running   0          20s   10.244.120.121   minikube   <none>           <none>
+api-94546b855-mj8lr   1/1     Running   0          32s   10.244.120.120   minikube   <none>           <none>
+api-94546b855-p2sbq   1/1     Running   0          44s   10.244.120.118   minikube   <none>           <none>
+api-94546b855-wxbmz   1/1     Running   0          38s   10.244.120.119   minikube   <none>           <none>
+
+$ kubectl -n rahbar patch hpa api --type merge -p '{"spec":{"minReplicas":3}}'
+horizontalpodautoscaler.autoscaling/api patched
+
+$ kubectl -n rahbar get endpoints api 2>/dev/null   # the command named in section 4.6 (deprecated in favour of EndpointSlices since 1.33, same data; captured 2026-11-07T15:56:56Z, back at 3 replicas)
+NAME   ENDPOINTS                                                   AGE
+api    10.244.120.126:8000,10.244.120.67:8000,10.244.120.69:8000   11h

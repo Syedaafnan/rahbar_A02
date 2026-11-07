@@ -1,0 +1,61 @@
+# Delete an api pod and chroma-0: nothing breaks, the index survives (section 1.3)
+# captured 2026-11-07T15:30:06Z on minikube  v1.37.0
+
+$ kubectl -n rahbar delete pod api-69789c5dbf-8bdj6 --wait=false
+pod "api-69789c5dbf-8bdj6" deleted from rahbar namespace
+
+$ kubectl -n rahbar get pods -l app.kubernetes.io/name=api
+NAME                   READY   STATUS              RESTARTS   AGE
+api-69789c5dbf-4jckv   0/1     ContainerCreating   0          0s
+api-69789c5dbf-8bdj6   1/1     Terminating         0          47s
+api-69789c5dbf-sthck   1/1     Running             0          36s
+api-69789c5dbf-zg2mq   1/1     Running             0          42s
+
+$ ask 'How many courses can a student repeat in the summer semester?' during-api-delete
+HTTP/1.1 200 OK
+x-cache: hit
+x-request-id: during-api-delete
+{
+ "request_id": "during-api-delete",
+ "answer": "2",
+ "citations": [
+  {
+   "source": "academic-rules-handbook-jun-2026.pdf",
+   "section": "6. Rules for Summer Semester > B. Graduating",
+   "page": 28
+  }
+ ],
+ "answered_from_context": true,
+ "confidence": "high"
+}
+retrieved:
+  0.8352  academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester > B. Graduating
+  0.8296  prospectus-2026-academic-rules-and-regulations.pdf :: 19. Rules for Summer Semester
+  0.7762  academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester
+  0.7514  student-handbook-jun-2026.pdf :: 18. It is generally recommended that students only take the
+  0.7501  academic-rules-handbook-jun-2026.pdf :: 4. Registration > Adding or Dropping a Course
+
+$ collection_meta
+{"embed_model": "nomic-embed-text", "index_version": "20261107T044259Z", "dimension": 768, "chunk_overlap": 50, "chunk_size": 400, "hnsw:space": "cosine"}
+
+$ kubectl -n rahbar delete pod chroma-0
+pod "chroma-0" deleted from rahbar namespace
+
+$ kubectl -n rahbar rollout status statefulset/chroma --timeout=180s
+Waiting for 1 pods to be ready...
+partitioned roll out complete: 1 new pods have been updated...
+
+$ kubectl -n rahbar get pvc
+NAME                   STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+cache-data             Bound    pvc-e7902d0c-142e-43dc-99d5-0304fd447ba8   256Mi      RWO            standard       <unset>                 11h
+chroma-data-chroma-0   Bound    pvc-be2337f7-ec8d-4a4a-a817-10764629218d   1Gi        RWO            standard       <unset>                 11h
+corpus-data            Bound    pvc-abf77f23-04c3-4f43-9a49-db6ec5b58982   512Mi      RWO            standard       <unset>                 11h
+
+$ echo 'collection after chroma-0 restarted (same PVC, same index):'
+collection after chroma-0 restarted (same PVC, same index):
+
+$ collection_meta
+{"dimension": 768, "index_version": "20261107T044259Z", "chunk_overlap": 50, "chunk_size": 400, "embed_model": "nomic-embed-text", "hnsw:space": "cosine"}
+
+$ kubectl -n rahbar rollout status deployment/api --timeout=180s
+deployment "api" successfully rolled out

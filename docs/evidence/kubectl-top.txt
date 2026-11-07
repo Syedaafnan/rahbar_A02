@@ -1,0 +1,35 @@
+# kubectl top pods: idle, then under 8 concurrent questions (section 4.5, notes Q3)
+# captured 2026-11-07T15:30:14Z on minikube  v1.37.0
+
+$ kubectl -n rahbar top pods
+NAME                     CPU(cores)   MEMORY(bytes)   
+api-69789c5dbf-8bdj6     95m          71Mi            
+api-69789c5dbf-sthck     121m         71Mi            
+api-69789c5dbf-zg2mq     105m         70Mi            
+chroma-0                 7m           71Mi            
+redis-5766dbfb48-s5k78   11m          7Mi             
+ui-5996dbdc64-s2487      1m           2Mi             
+
+$ echo '--- under load (requests in flight, waiting on the LLM)'; kubectl -n rahbar top pods
+--- under load (requests in flight, waiting on the LLM)
+NAME                     CPU(cores)   MEMORY(bytes)   
+api-69789c5dbf-4jckv     104m         70Mi            
+api-69789c5dbf-sthck     9m           73Mi            
+api-69789c5dbf-zg2mq     7m           73Mi            
+chroma-0                 26m          52Mi            
+redis-5766dbfb48-s5k78   18m          7Mi             
+ui-5996dbdc64-s2487      1m           2Mi             
+
+$ kubectl -n rahbar get hpa api
+NAME   REFERENCE        TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+api    Deployment/api   cpu: 8%/70%   3         8         3          11h
+
+$ cat /tmp/rahbar-load.txt
+request 2: 200 in 20.865598s
+request 1: 200 in 54.334946s
+request 3: 200 in 85.425474s
+request 4: 200 in 110.523348s
+request 6: 200 in 191.661324s
+request 5: 200 in 218.917889s
+request 7: 200 in 245.753616s
+request 8: 200 in 301.060282s

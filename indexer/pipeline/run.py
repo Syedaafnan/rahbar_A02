@@ -15,9 +15,10 @@ import os
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 from .config import IndexerSettings, get_settings
-from .models import Chunk
+from .models import Chunk, Document
 
 
 def log(msg: str, **fields: object) -> None:
@@ -63,35 +64,111 @@ def discover(corpus_dir: str) -> list[tuple[Path, str, bool]]:
     return found
 
 
-def run_pipeline(settings: IndexerSettings) -> int:
-    from .chunk import chunk
+def load_documents(settings: IndexerSettings) -> list[Document]:
+    """Stages 1-2 for every document: extract (with OCR), then clean."""
     from .clean import clean
-    from .embed import embed
     from .extract import extract
-    from .store import store
 
     documents = discover(settings.corpus_dir)
     if not documents:
         raise SystemExit(f"no documents found in {settings.corpus_dir}")
+    return [clean(extract(str(path), version, old)) for path, version, old in documents]
+
+
+def build_chunks(settings: IndexerSettings, docs: list[Document] | None = None) -> list[Chunk]:
+    """Stage 3 for every document: chunk (after stages 1-2, unless docs are given)."""
+    from .chunk import chunk, chunk_fixed
+
+    splitter = chunk_fixed if settings.chunk_strategy == "fixed" else chunk
     all_chunks: list[Chunk] = []
-    for path, doc_version, superseded in documents:
-        doc = clean(extract(str(path), doc_version, superseded))
-        pieces = chunk(doc, settings.chunk_size, settings.chunk_overlap)
-        log("chunked", source=path.name, chunks=len(pieces))
+    original_words = 0
+    for doc in docs if docs is not None else load_documents(settings):
+        words = sum(len(p.text.split()) for p in doc.pages)
+        original_words += words
+        pieces = splitter(doc, settings.chunk_size, settings.chunk_overlap)
+        log("chunked", source=doc.source, pages=len(doc.pages), words=words,
+            ocr_pages=[p.page for p in doc.pages if p.ocr], chunks=len(pieces),
+            doc_version=doc.doc_version, superseded=doc.superseded)
         all_chunks.extend(pieces)
+    stored = sum(len(c.text.split()) for c in all_chunks)
+    # Storage amplification (section 3.1): stored words / original words.
+    log("chunking summary", strategy=settings.chunk_strategy, size=settings.chunk_size,
+        overlap=settings.chunk_overlap, chunks=len(all_chunks), original_words=original_words,
+        stored_words=stored, amplification=round(stored / max(1, original_words), 3))
+    return all_chunks
+
+
+def wait_for_dependencies(settings: IndexerSettings, need_ollama: bool = True,
+                          timeout: float | None = None, client: Any = None) -> list[str]:
+    """Wait until Chroma (and Ollama) answer, then return the names still down ([] = ok).
+
+    The Job is applied together with the Chroma StatefulSet, so on a fresh cluster it
+    can start while Chroma is still pulling its image. Without this wait the first
+    connection fails, the Job burns its three attempts in ~30 s and is marked Failed.
+    """
+    import httpx
+
+    timeout = float(os.environ.get("INDEXER_WAIT_SECONDS", 180)) if timeout is None else timeout
+    urls = {"chroma": f"http://{settings.chroma_host}:{settings.chroma_port}/api/v2/heartbeat"}
+    if need_ollama:
+        urls["ollama"] = f"{settings.ollama_url.rstrip('/')}/api/tags"
+    http = client or httpx.Client(timeout=3.0)
+    deadline = time.monotonic() + timeout
+    while True:
+        down = []
+        for name, url in urls.items():
+            try:
+                if http.get(url).status_code != 200:
+                    down.append(name)
+            except Exception:
+                down.append(name)
+        if not down or time.monotonic() >= deadline:
+            return down
+        log("waiting for dependencies", down=down)
+        time.sleep(3)
+
+
+def run_pipeline(settings: IndexerSettings, dump: str | None = None) -> int:
+    from .embed import embed
+    from .store import store
+
+    all_chunks = build_chunks(settings)
+    if dump:                                  # inspect chunks without a model or Chroma
+        Path(dump).write_text(json.dumps([c.__dict__ for c in all_chunks], indent=1),
+                              encoding="utf-8")
+        log("chunks written", file=dump)
+        return len(all_chunks)
     vectors = embed([c.text for c in all_chunks], settings)
+    log("embedded", chunks=len(vectors), dimension=len(vectors[0]), model=settings.embed_model)
     return store(all_chunks, vectors, settings)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Build the RAHBAR index, then exit.")
     parser.add_argument("--dummy", action="store_true", help="write three fake chunks")
+    parser.add_argument("--dump", metavar="FILE",
+                        help="extract, clean and chunk, write the chunks to FILE, then stop")
+    parser.add_argument("--dump-docs", metavar="FILE",
+                        help="extract and clean only, write the documents to FILE, then stop "
+                             "(input for eval/chunk_experiment.py)")
     args = parser.parse_args()
+    if args.dump_docs:
+        docs = load_documents(get_settings())
+        Path(args.dump_docs).write_text(json.dumps(
+            [{**d.__dict__, "pages": [p.__dict__ for p in d.pages]} for d in docs]),
+            encoding="utf-8")
+        log("documents written", file=args.dump_docs, documents=len(docs))
+        return 0
     settings = get_settings()
     log("indexer starting", dummy=args.dummy, embed_model=settings.embed_model,
         collection=settings.collection, chroma=f"{settings.chroma_host}:{settings.chroma_port}",
         pod=os.environ.get("HOSTNAME", "-"))
     started = time.perf_counter()
+    if not args.dump:                         # --dump needs neither Chroma nor a model
+        down = wait_for_dependencies(settings, need_ollama=not args.dummy)
+        if down:
+            log("dependencies not reachable, giving up", down=down)
+            return 1
     try:
         if args.dummy:
             from .dummy import write_dummy_index
@@ -99,7 +176,7 @@ def main() -> int:
 
             count = write_dummy_index(settings, get_client(settings))
         else:
-            count = run_pipeline(settings)
+            count = run_pipeline(settings, dump=args.dump)
     except NotImplementedError as exc:
         log("indexer stage not implemented yet", error=str(exc))
         return 2

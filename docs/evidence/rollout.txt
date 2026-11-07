@@ -1,0 +1,93 @@
+# Rollout and rollback (section 4.6): set image -> rollout status -> rollout undo
+# captured 2026-11-07T15:37:26Z on minikube  v1.37.0
+
+$ kubectl -n rahbar get deploy api -o jsonpath='{.spec.template.spec.containers[0].image}'; echo
+rahbar-api:dev
+
+$ kubectl -n rahbar set image deployment/api api=rahbar-api:v2
+deployment.apps/api image updated
+
+$ kubectl -n rahbar rollout status deployment/api --timeout=300s
+Waiting for deployment "api" rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+
+$ kubectl -n rahbar get deploy api -o jsonpath='{.spec.template.spec.containers[0].image}'; echo
+rahbar-api:v2
+
+$ kubectl -n rahbar logs deploy/api | grep -m1 'api started'
+Found 7 pods, using pod/api-94546b855-p2sbq
+{"ts": "2026-11-07T15:36:44Z", "level": "INFO", "logger": "rahbar.api", "msg": "api started", "request_id": "-", "retriever": "chroma", "llm_provider": "ollama-host", "embed_model": "nomic-embed-text", "top_k": 5, "relevance_floor": 0.6, "cache": "RedisCache"}
+
+$ kubectl -n rahbar rollout history deployment/api
+deployment.apps/api 
+REVISION  CHANGE-CAUSE
+6         <none>
+7         <none>
+9         <none>
+10        <none>
+11        <none>
+12        <none>
+
+
+$ kubectl -n rahbar rollout undo deployment/api
+deployment.apps/api rolled back
+
+$ kubectl -n rahbar rollout status deployment/api --timeout=300s
+Waiting for deployment "api" rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+
+$ kubectl -n rahbar get deploy api -o jsonpath='{.spec.template.spec.containers[0].image}'; echo
+rahbar-api:dev
+
+$ ask 'What attendance is required in lectures?' after-undo
+HTTP/1.1 200 OK
+x-cache: miss
+x-request-id: after-undo
+{
+ "request_id": "after-undo",
+ "answer": "100%",
+ "citations": [
+  {
+   "source": "prospectus-2026-academic-rules-and-regulations.pdf",
+   "section": "1. Attendance Requirement",
+   "page": 1
+  },
+  {
+   "source": "academic-rules-handbook-jun-2026.pdf",
+   "section": "1. Introduction > Attendance Requirements",
+   "page": 10
+  }
+ ],
+ "answered_from_context": true,
+ "confidence": "high"
+}
+retrieved:
+  0.8591  prospectus-2026-academic-rules-and-regulations.pdf :: 1. Attendance Requirement
+  0.8509  academic-rules-handbook-jun-2026.pdf :: 1. Introduction > Attendance Requirements
+  0.6970  student-handbook-jun-2026.pdf :: 3. Students are strongly advised to avoid scheduling any
+  0.6946  prospectus-2026-academic-rules-and-regulations.pdf :: 18. Missed Examinations
+  0.6922  student-handbook-jun-2026.pdf :: 7. Students who have missed classes due to any

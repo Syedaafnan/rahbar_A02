@@ -1,0 +1,23 @@
+# Local minikube: images built with `make images` and loaded with
+# `minikube image load`, so the tag is `dev` and nothing is pulled.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - { name: rahbar-api, newTag: dev }
+  - { name: rahbar-ui, newTag: dev }
+  - { name: rahbar-indexer, newTag: dev }
+patches:
+  # ollama-host mode: the api's only way out of the cluster is the laptop's Ollama.
+  # 192.168.65.254 is host.minikube.internal with the docker driver on Docker Desktop;
+  # check yours with:  minikube ssh "grep host.minikube.internal /etc/hosts"
+  - target: { kind: NetworkPolicy, name: api }
+    patch: |-
+      - op: replace
+        path: /spec/egress/2
+        value:
+          to:
+            - ipBlock: { cidr: 192.168.65.254/32 }
+          ports:
+            - { protocol: TCP, port: 11434 }

@@ -1,0 +1,34 @@
+# The indexer with a memory limit below its peak: OOMKilled, exit code 137 (notes Q4)
+# captured 2026-11-07T15:50:26Z on minikube  v1.37.0
+
+$ kubectl create job --from=cronjob/reindex oom-demo -n rahbar --dry-run=client -o yaml | sed -e 's/memory: 1536Mi/memory: 256Mi/' -e 's/memory: 512Mi/memory: 256Mi/' -e 's/backoffLimit: 2/backoffLimit: 0/' -e 's/restartPolicy: OnFailure/restartPolicy: Never/' | kubectl apply -f -
+job.batch/oom-demo created
+
+$ kubectl -n rahbar get job oom-demo -o jsonpath='{.spec.template.spec.containers[0].resources}'; echo
+{"limits":{"cpu":"2","memory":"256Mi"},"requests":{"cpu":"500m","memory":"256Mi"}}
+
+$ kubectl -n rahbar get job oom-demo
+NAME       STATUS   COMPLETIONS   DURATION   AGE
+oom-demo   Failed   0/1           17s        17s
+
+$ kubectl -n rahbar get pods -l job-name=oom-demo
+NAME             READY   STATUS      RESTARTS   AGE
+oom-demo-cq7g4   0/1     OOMKilled   0          18s
+
+$ kubectl -n rahbar get pod -l job-name=oom-demo -o jsonpath='{.items[0].status.containerStatuses[0].state.terminated}'; echo
+{"containerID":"containerd://2f768677bf2c6f0b8978587e8542a6e7dac23a0f60b9af99646a6d4f4bb88d28","exitCode":137,"finishedAt":"2026-11-07T15:50:41Z","reason":"OOMKilled","startedAt":"2026-11-07T15:50:28Z"}
+
+$ kubectl -n rahbar describe job oom-demo | tail -4
+  Type     Reason                Age   From            Message
+  ----     ------                ----  ----            -------
+  Normal   SuccessfulCreate      18s   job-controller  Created pod: oom-demo-cq7g4
+  Warning  BackoffLimitExceeded  1s    job-controller  Job has reached the specified backoff limit
+
+$ echo 'live index untouched:'
+live index untouched:
+
+$ collection_meta
+{"chunk_size": 400, "dimension": 768, "chunk_overlap": 50, "index_version": "20261107T154753Z", "embed_model": "nomic-embed-text"}
+
+$ kubectl -n rahbar delete job oom-demo
+job.batch "oom-demo" deleted from rahbar namespace

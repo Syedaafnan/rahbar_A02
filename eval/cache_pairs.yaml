@@ -1,0 +1,33 @@
+# Question pairs for choosing CACHE_THRESHOLD (section 3.3, eval/cache_threshold.py).
+#
+# same:      the second question means the same as the first; a cache hit is CORRECT.
+# different: the second question looks similar but needs a different answer; a cache
+#            hit would serve the wrong answer to a student. Zero of these may hit.
+same:
+  - ["What is the last date to withdraw from a course?",
+     "When is the deadline for withdrawing from a course?"]
+  - ["What CGPA do I need to avoid academic warning?",
+     "What is the minimum CGPA to stay off academic warning?"]
+  - ["How much is the tuition fee per credit hour for BS students?",
+     "What is the BS tuition fee per credit hour?"]
+  - ["How many courses can I repeat in the summer semester?",
+     "How many courses is a student allowed to repeat in summer?"]
+  - ["What attendance is required in lectures?",
+     "How much attendance do I need in my classes?"]
+  - ["How much is the paper rechecking fee?",
+     "What does it cost to get a paper rechecked?"]
+different:
+  - ["What is the minimum CGPA to avoid academic warning in MS programs?",
+     "What is the minimum CGPA to avoid academic warning in BS programs?"]
+  - ["What is the last date to withdraw from a course?",
+     "What is the last date to drop a course?"]
+  - ["How much is the paper rechecking fee?",
+     "How much is the campus transfer fee?"]
+  - ["How much fee is refunded on the 12th day of classes?",
+     "How much fee is refunded on the 25th day of classes?"]
+  - ["Under the 2023 rules, what was the withdrawal deadline?",
+     "What is the withdrawal deadline?"]
+  - ["How many weeks long is the summer semester?",
+     "How many courses can I take in the summer semester?"]
+  - ["What CGPA do I need to avoid academic warning?",
+     "What CGPA do I need to graduate with honours?"]
