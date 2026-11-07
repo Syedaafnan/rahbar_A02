@@ -1,7 +1,7 @@
 # RAHBAR: grounded answers about FAST-NUCES rules, on Kubernetes
 
-[![ci](https://github.com/Syedaafnan/rahbar/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/Syedaafnan/rahbar/actions/workflows/ci.yml)
-[![cd](https://github.com/Syedaafnan/rahbar/actions/workflows/cd.yml/badge.svg)](https://github.com/Syedaafnan/rahbar/actions/workflows/cd.yml)
+[![ci](https://github.com/Syedaafnan/rahbar_A02/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/Syedaafnan/rahbar_A02/actions/workflows/ci.yml)
+[![cd](https://github.com/Syedaafnan/rahbar_A02/actions/workflows/cd.yml/badge.svg)](https://github.com/Syedaafnan/rahbar_A02/actions/workflows/cd.yml)
 
 A student wants to know whether they can register for a course after failing its
 prerequisite, or when the last day to withdraw is. The answer is in a PDF on the
