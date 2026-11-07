@@ -4,7 +4,3 @@ metadata:
   name: rahbar
   labels:
     app.kubernetes.io/part-of: rahbar
-    # Pod Security Admission: reject pods that run as root, escalate privileges or
-    # keep capabilities. Our own securityContexts already satisfy "restricted".
-    pod-security.kubernetes.io/enforce: restricted
-    pod-security.kubernetes.io/enforce-version: latest

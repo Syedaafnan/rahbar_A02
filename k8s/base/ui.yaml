@@ -17,6 +17,9 @@ spec:
       labels: { app.kubernetes.io/name: ui, app.kubernetes.io/part-of: rahbar }
     spec:
       serviceAccountName: rahbar-ui
+      # No CHROMA_PORT=tcp://... style variables from Services: chroma reads every
+      # CHROMA_* variable as config and crashes on them; we use DNS names instead.
+      enableServiceLinks: false
       automountServiceAccountToken: false
       terminationGracePeriodSeconds: 15
       securityContext:

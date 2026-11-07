@@ -1,4 +1,4 @@
-# The semantic cache (ADR 0003). Redis with append-only persistence on a PVC, so a
+# The semantic cache (ADR 0002). Redis with append-only persistence on a PVC, so a
 # restarted pod keeps its cache instead of re-paying every LLM call.
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -27,6 +27,9 @@ spec:
       labels: { app.kubernetes.io/name: redis, app.kubernetes.io/part-of: rahbar }
     spec:
       serviceAccountName: rahbar-redis
+      # No CHROMA_PORT=tcp://... style variables from Services: chroma reads every
+      # CHROMA_* variable as config and crashes on them; we use DNS names instead.
+      enableServiceLinks: false
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true

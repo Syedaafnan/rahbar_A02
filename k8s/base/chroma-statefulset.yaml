@@ -1,4 +1,4 @@
-# The vector store. A StatefulSet, not a Deployment (docs/ARCHITECTURE.md):
+# The vector store. A StatefulSet, not a Deployment (ARCHITECTURE.md):
 # - volumeClaimTemplates give the pod its OWN claim (chroma-data-chroma-0) that
 #   follows the stable identity chroma-0 across restarts and reschedules;
 # - a Deployment's rolling update would start a second pod against the same
@@ -20,6 +20,9 @@ spec:
       labels: { app.kubernetes.io/name: chroma, app.kubernetes.io/part-of: rahbar }
     spec:
       serviceAccountName: rahbar-chroma
+      # No CHROMA_PORT=tcp://... style variables from Services: chroma reads every
+      # CHROMA_* variable as config and crashes on them; we use DNS names instead.
+      enableServiceLinks: false
       automountServiceAccountToken: false
       terminationGracePeriodSeconds: 30
       securityContext:

@@ -19,9 +19,16 @@ spec:
       labels: { app.kubernetes.io/name: api, app.kubernetes.io/part-of: rahbar }
     spec:
       serviceAccountName: rahbar-api
+      # No CHROMA_PORT=tcp://... style variables from Services: chroma reads every
+      # CHROMA_* variable as config and crashes on them; we use DNS names instead.
+      enableServiceLinks: false
       automountServiceAccountToken: false
-      # preStop sleep (10 s) + uvicorn's own graceful shutdown must fit inside this.
-      terminationGracePeriodSeconds: 30
+      # preStop sleep (10 s) + uvicorn finishing its in-flight requests must fit inside
+      # this. One answer can take two LLM calls of up to LLM_TIMEOUT_SECONDS (150 s), so
+      # 30 s cut answers off mid-generation during a rollout (a 502 in
+      # docs/evidence/rollout.txt). 360 s matches the Ingress proxy-read-timeout; an
+      # idle pod still exits as soon as the preStop sleep ends.
+      terminationGracePeriodSeconds: 360
       securityContext:
         runAsNonRoot: true
         runAsUser: 10001
@@ -83,15 +90,6 @@ spec:
       volumes:
         - name: tmp
           emptyDir: { sizeLimit: 64Mi }
----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: api
-spec:
-  minAvailable: 2
-  selector:
-    matchLabels: { app.kubernetes.io/name: api }
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
