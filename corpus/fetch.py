@@ -141,7 +141,7 @@ def fetch(force: bool) -> int:
 
     index_path.write_text(json.dumps(entries, indent=2), encoding="utf-8")
     write_manifest(entries)
-    print(f"\n{len(entries)} documents in corpus/raw, manifest written to corpus/MANIFEST.md")
+    print(f"\n{len(entries)} documents in {RAW}, manifest written to {MANIFEST_OUT}")
     if failures:
         print(f"{len(failures)} failed; fix their URLs in sources.yaml and run again:")
         for name, reason in failures:
