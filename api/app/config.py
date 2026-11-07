@@ -2,7 +2,6 @@
 
 On the cluster these variables come from your ConfigMap and Secret (section 4.1).
 Nothing here is baked into the image, so one image runs in every environment.
-Add your own keys (relevance floor, cache settings, ...) the same way.
 """
 
 from __future__ import annotations
@@ -33,12 +32,22 @@ class Settings:
     chroma_port: int = 8000
     collection: str = "rahbar"
 
+    # Semantic cache (section 3.3). Empty REDIS_HOST turns the cache off.
+    redis_host: str = ""
+    redis_port: int = 6379
+    cache_threshold: float = 0.96
+    cache_ttl_seconds: int = 86400
+
     # Retrieval and generation
     top_k: int = 5
-    temperature: float = 0.2
+    relevance_floor: float = 0.60    # below this similarity a passage is not evidence
+    llm_context_passages: int = 3    # best passages (above the floor) sent to the LLM
+    llm_passage_words: int = 180     # each one cut to this many words in the prompt
+    temperature: float = 0.1
     llm_model: str = "llama3.2:3b"
+    llm_timeout_seconds: float = 150.0
     ollama_url: str = "http://host.minikube.internal:11434"
-    hosted_base_url: str = ""        # e.g. an OpenAI-compatible endpoint
+    hosted_base_url: str = ""        # e.g. https://api.groq.com/openai/v1
     llm_api_key: str = field(default="", repr=False)   # from the Secret; never log it
 
     log_level: str = "INFO"
@@ -52,9 +61,17 @@ def get_settings() -> Settings:
         chroma_host=os.environ.get("CHROMA_HOST", "chroma"),
         chroma_port=_int("CHROMA_PORT", 8000),
         collection=os.environ.get("CHROMA_COLLECTION", "rahbar"),
+        redis_host=os.environ.get("REDIS_HOST", ""),
+        redis_port=_int("REDIS_PORT", 6379),
+        cache_threshold=_float("CACHE_THRESHOLD", 0.96),
+        cache_ttl_seconds=_int("CACHE_TTL_SECONDS", 86400),
         top_k=_int("TOP_K", 5),
-        temperature=_float("TEMPERATURE", 0.2),
+        relevance_floor=_float("RELEVANCE_FLOOR", 0.60),
+        llm_context_passages=_int("LLM_CONTEXT_PASSAGES", 3),
+        llm_passage_words=_int("LLM_PASSAGE_WORDS", 180),
+        temperature=_float("TEMPERATURE", 0.1),
         llm_model=os.environ.get("LLM_MODEL", "llama3.2:3b"),
+        llm_timeout_seconds=_float("LLM_TIMEOUT_SECONDS", 150.0),
         ollama_url=os.environ.get("OLLAMA_URL", "http://host.minikube.internal:11434"),
         hosted_base_url=os.environ.get("HOSTED_BASE_URL", ""),
         llm_api_key=os.environ.get("LLM_API_KEY", ""),
