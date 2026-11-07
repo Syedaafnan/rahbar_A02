@@ -1,0 +1,45 @@
+# Stage E (failure analysis): top-5 for version-sensitive questions, superseded filter ON vs OFF.
+# Index: structure 400/50 on the real corpus. Produced with app.retrieval.chroma.ChromaRetriever,
+# include_superseded=False (filter) vs True (no filter), 7 Nov 2026.
+
+[FILTER ON] What is the last date to withdraw from a course?  -> superseded passages in top 5: 0
+  0.7828           academic-rules-handbook-jun-2026.pdf :: 4. Registration > Withdrawal from a Course
+  0.7461           prospectus-2026-academic-rules-and-regulations.pdf :: 13. Registration of Students under
+  0.6946           academic-rules-handbook-jun-2026.pdf :: 4. Registration > Adding or Dropping a Course
+  0.6857           student-handbook-jun-2026.pdf :: 6. Students are allowed to Add/Drop a course during the
+  0.6774           student-handbook-jun-2026.pdf :: 1. Dates/week of sessional exams and the final exam are
+
+[NO FILTER] What is the last date to withdraw from a course?  -> superseded passages in top 5: 2
+  0.7828           academic-rules-handbook-jun-2026.pdf :: 4. Registration > Withdrawal from a Course
+  0.7802  OLD 2023 undergraduate-academic-rules-aug-2023.pdf :: 4. Registration > Withdrawal from a Course
+  0.7461           prospectus-2026-academic-rules-and-regulations.pdf :: 13. Registration of Students under
+  0.6946  OLD 2023 undergraduate-academic-rules-aug-2023.pdf :: 4. Registration > Adding or Dropping a Course
+  0.6946           academic-rules-handbook-jun-2026.pdf :: 4. Registration > Adding or Dropping a Course
+
+[FILTER ON] Can I register for a new course in the summer semester?  -> superseded passages in top 5: 0
+  0.8134           academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester > B. Graduating
+  0.7945           prospectus-2026-academic-rules-and-regulations.pdf :: 19. Rules for Summer Semester
+  0.7945           academic-rules-handbook-jun-2026.pdf :: 4. Registration > Adding or Dropping a Course
+  0.7421           prospectus-2026-academic-rules-and-regulations.pdf :: 12. Semester Registration Director of the campus can allow
+  0.7237           student-handbook-jun-2026.pdf :: 6. Students are allowed to Add/Drop a course during the
+
+[NO FILTER] Can I register for a new course in the summer semester?  -> superseded passages in top 5: 2
+  0.8134           academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester > B. Graduating
+  0.7945           prospectus-2026-academic-rules-and-regulations.pdf :: 19. Rules for Summer Semester
+  0.7945  OLD 2023 undergraduate-academic-rules-aug-2023.pdf :: 4. Registration > Adding or Dropping a Course
+  0.7945           academic-rules-handbook-jun-2026.pdf :: 4. Registration > Adding or Dropping a Course
+  0.7848  OLD 2023 undergraduate-academic-rules-aug-2023.pdf :: 6. Rules for Summer Semester
+
+[FILTER ON] How many weeks long is the summer semester?  -> superseded passages in top 5: 0
+  0.8605           academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester
+  0.8460           prospectus-2026-academic-rules-and-regulations.pdf :: 19. Rules for Summer Semester
+  0.7866           prospectus-2026-academic-rules-and-regulations.pdf :: 3. Academic Year > December/January. Spring
+  0.7628           academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester > B. Graduating
+  0.7468           academic-rules-handbook-jun-2026.pdf :: 1. Introduction > Academic Year
+
+[NO FILTER] How many weeks long is the summer semester?  -> superseded passages in top 5: 1
+  0.8605           academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester
+  0.8460           prospectus-2026-academic-rules-and-regulations.pdf :: 19. Rules for Summer Semester
+  0.8254  OLD 2023 undergraduate-academic-rules-aug-2023.pdf :: 6. Rules for Summer Semester
+  0.7866           prospectus-2026-academic-rules-and-regulations.pdf :: 3. Academic Year > December/January. Spring
+  0.7628           academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester > B. Graduating

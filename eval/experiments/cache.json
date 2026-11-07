@@ -1,0 +1,163 @@
+{
+  "pairs": {
+    "same": [
+      {
+        "a": "What is the last date to withdraw from a course?",
+        "b": "When is the deadline for withdrawing from a course?",
+        "similarity": 0.9224
+      },
+      {
+        "a": "What CGPA do I need to avoid academic warning?",
+        "b": "What is the minimum CGPA to stay off academic warning?",
+        "similarity": 0.907
+      },
+      {
+        "a": "How much is the tuition fee per credit hour for BS students?",
+        "b": "What is the BS tuition fee per credit hour?",
+        "similarity": 0.976
+      },
+      {
+        "a": "How many courses can I repeat in the summer semester?",
+        "b": "How many courses is a student allowed to repeat in summer?",
+        "similarity": 0.9538
+      },
+      {
+        "a": "What attendance is required in lectures?",
+        "b": "How much attendance do I need in my classes?",
+        "similarity": 0.8673
+      },
+      {
+        "a": "How much is the paper rechecking fee?",
+        "b": "What does it cost to get a paper rechecked?",
+        "similarity": 0.945
+      }
+    ],
+    "different": [
+      {
+        "a": "What is the minimum CGPA to avoid academic warning in MS programs?",
+        "b": "What is the minimum CGPA to avoid academic warning in BS programs?",
+        "similarity": 0.9521
+      },
+      {
+        "a": "What is the last date to withdraw from a course?",
+        "b": "What is the last date to drop a course?",
+        "similarity": 0.9112
+      },
+      {
+        "a": "How much is the paper rechecking fee?",
+        "b": "How much is the campus transfer fee?",
+        "similarity": 0.5466
+      },
+      {
+        "a": "How much fee is refunded on the 12th day of classes?",
+        "b": "How much fee is refunded on the 25th day of classes?",
+        "similarity": 0.8415
+      },
+      {
+        "a": "Under the 2023 rules, what was the withdrawal deadline?",
+        "b": "What is the withdrawal deadline?",
+        "similarity": 0.8461
+      },
+      {
+        "a": "How many weeks long is the summer semester?",
+        "b": "How many courses can I take in the summer semester?",
+        "similarity": 0.8417
+      },
+      {
+        "a": "What CGPA do I need to avoid academic warning?",
+        "b": "What CGPA do I need to graduate with honours?",
+        "similarity": 0.7374
+      }
+    ]
+  },
+  "table": [
+    {
+      "threshold": 0.85,
+      "true_hits": 6,
+      "of_same": 6,
+      "false_hits": 2,
+      "false_hit_example": {
+        "a": "What is the minimum CGPA to avoid academic warning in MS programs?",
+        "b": "What is the minimum CGPA to avoid academic warning in BS programs?",
+        "similarity": 0.9521
+      }
+    },
+    {
+      "threshold": 0.88,
+      "true_hits": 5,
+      "of_same": 6,
+      "false_hits": 2,
+      "false_hit_example": {
+        "a": "What is the minimum CGPA to avoid academic warning in MS programs?",
+        "b": "What is the minimum CGPA to avoid academic warning in BS programs?",
+        "similarity": 0.9521
+      }
+    },
+    {
+      "threshold": 0.9,
+      "true_hits": 5,
+      "of_same": 6,
+      "false_hits": 2,
+      "false_hit_example": {
+        "a": "What is the minimum CGPA to avoid academic warning in MS programs?",
+        "b": "What is the minimum CGPA to avoid academic warning in BS programs?",
+        "similarity": 0.9521
+      }
+    },
+    {
+      "threshold": 0.92,
+      "true_hits": 4,
+      "of_same": 6,
+      "false_hits": 1,
+      "false_hit_example": {
+        "a": "What is the minimum CGPA to avoid academic warning in MS programs?",
+        "b": "What is the minimum CGPA to avoid academic warning in BS programs?",
+        "similarity": 0.9521
+      }
+    },
+    {
+      "threshold": 0.94,
+      "true_hits": 3,
+      "of_same": 6,
+      "false_hits": 1,
+      "false_hit_example": {
+        "a": "What is the minimum CGPA to avoid academic warning in MS programs?",
+        "b": "What is the minimum CGPA to avoid academic warning in BS programs?",
+        "similarity": 0.9521
+      }
+    },
+    {
+      "threshold": 0.95,
+      "true_hits": 2,
+      "of_same": 6,
+      "false_hits": 1,
+      "false_hit_example": {
+        "a": "What is the minimum CGPA to avoid academic warning in MS programs?",
+        "b": "What is the minimum CGPA to avoid academic warning in BS programs?",
+        "similarity": 0.9521
+      }
+    },
+    {
+      "threshold": 0.96,
+      "true_hits": 1,
+      "of_same": 6,
+      "false_hits": 0,
+      "false_hit_example": null
+    },
+    {
+      "threshold": 0.97,
+      "true_hits": 1,
+      "of_same": 6,
+      "false_hits": 0,
+      "false_hit_example": null
+    },
+    {
+      "threshold": 0.98,
+      "true_hits": 0,
+      "of_same": 6,
+      "false_hits": 0,
+      "false_hit_example": null
+    }
+  ],
+  "chosen": 0.96
+}

@@ -1,0 +1,223 @@
+[
+  {
+    "config": "structure:400:50",
+    "strategy": "structure",
+    "size": 400,
+    "overlap": 50,
+    "chunks": 601,
+    "amplification": 1.038,
+    "index_seconds": 275.8,
+    "recall@1": 0.5476,
+    "recall@3": 0.7857,
+    "recall@5": 0.7857,
+    "superseded_filter": true,
+    "recall@5_by_type": {
+      "exact": 0.8,
+      "injection": 1.0,
+      "ordinary": 0.7727,
+      "version": 0.75
+    },
+    "questions": [
+      {
+        "id": "q01",
+        "type": "ordinary",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.8657,
+        "top1": "academic-rules-handbook-jun-2026.pdf :: 5. Academic Assessment > Academic Warning/Probation"
+      },
+      {
+        "id": "q02",
+        "type": "ordinary",
+        "must_abstain": false,
+        "recall@5": 0.5,
+        "top1_score": 0.7686,
+        "top1": "grading-page.html :: Warning/Probation"
+      },
+      {
+        "id": "q03",
+        "type": "ordinary",
+        "must_abstain": false,
+        "recall@5": 0.0,
+        "top1_score": 0.757,
+        "top1": "prospectus-2026-academic-rules-and-regulations.pdf :: 12. Semester Registration Director of the campus can allow"
+      },
+      {
+        "id": "q04",
+        "type": "ordinary",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.7179,
+        "top1": "fee-structure-page.html :: Fee Refund Policy"
+      },
+      {
+        "id": "q05",
+        "type": "ordinary",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.8711,
+        "top1": "student-handbook-jun-2026.pdf :: XII. Policy on Generative AI Based Tools > 5. Unacceptable Uses of Generative AI Tools"
+      },
+      {
+        "id": "q06",
+        "type": "ordinary",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.7752,
+        "top1": "grading-page.html :: Academic Grading > Academic Grading"
+      },
+      {
+        "id": "q07",
+        "type": "ordinary",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.8352,
+        "top1": "academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester > B. Graduating"
+      },
+      {
+        "id": "q08",
+        "type": "ordinary",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.8418,
+        "top1": "student-handbook-jun-2026.pdf :: XII. Policy on Generative AI Based Tools > 7. Detecting Generative AI Use in Assessments"
+      },
+      {
+        "id": "q09",
+        "type": "ordinary",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.8341,
+        "top1": "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Withdrawal from a Course"
+      },
+      {
+        "id": "q10",
+        "type": "ordinary",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.8392,
+        "top1": "annual-report-2023-24.pdf :: 1. Applications Statistics (Discipline Wise) > 76th Convocation of the University"
+      },
+      {
+        "id": "q11",
+        "type": "ordinary",
+        "must_abstain": false,
+        "recall@5": 0.0,
+        "top1_score": 0.6754,
+        "top1": "prospectus-2026-academic-rules-and-regulations.pdf :: 34. Maximum Time Allowed to > Complete Degree Requirements"
+      },
+      {
+        "id": "v01",
+        "type": "version",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.7828,
+        "top1": "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Withdrawal from a Course"
+      },
+      {
+        "id": "v02",
+        "type": "version",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.8134,
+        "top1": "academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester > B. Graduating"
+      },
+      {
+        "id": "v03",
+        "type": "version",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.8605,
+        "top1": "academic-rules-handbook-jun-2026.pdf :: 6. Rules for Summer Semester"
+      },
+      {
+        "id": "v04",
+        "type": "version",
+        "must_abstain": false,
+        "recall@5": 0.0,
+        "top1_score": 0.7836,
+        "top1": "academic-rules-handbook-jun-2026.pdf :: 4. Registration > Withdrawal from a Course"
+      },
+      {
+        "id": "e01",
+        "type": "exact",
+        "must_abstain": false,
+        "recall@5": 0.0,
+        "top1_score": 0.6871,
+        "top1": "student-handbook-jun-2026.pdf :: 22. Social Media Etiquettes > I - ACADEMIC RULES and REGULATIONS"
+      },
+      {
+        "id": "e02",
+        "type": "exact",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.8425,
+        "top1": "fee-structure-page.html :: Tuition Fee (w.e.f. Fall 2026 semester)"
+      },
+      {
+        "id": "e03",
+        "type": "exact",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.7317,
+        "top1": "academic-rules-handbook-jun-2026.pdf :: 5. Academic Assessment > Rechecking of Final Exams"
+      },
+      {
+        "id": "e04",
+        "type": "exact",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.8878,
+        "top1": "prospectus-2026-academic-rules-and-regulations.pdf :: 9. Rector's List of Honours"
+      },
+      {
+        "id": "e05",
+        "type": "exact",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.8569,
+        "top1": "academic-rules-handbook-jun-2026.pdf :: 5. Academic Assessment > Academic Warning/Probation"
+      },
+      {
+        "id": "a01",
+        "type": "abstain",
+        "must_abstain": true,
+        "recall@5": null,
+        "top1_score": 0.718,
+        "top1": "annual-report-2023-24.pdf :: Peshawar Campus"
+      },
+      {
+        "id": "a02",
+        "type": "abstain",
+        "must_abstain": true,
+        "recall@5": null,
+        "top1_score": 0.6391,
+        "top1": "annual-report-2023-24.pdf :: 12. Special Initiatives > In-house Medical Center"
+      },
+      {
+        "id": "a03",
+        "type": "abstain",
+        "must_abstain": true,
+        "recall@5": null,
+        "top1_score": 0.6608,
+        "top1": "student-handbook-jun-2026.pdf :: X. STUDENT FACILITIES AT CAMPUSES"
+      },
+      {
+        "id": "i01",
+        "type": "injection",
+        "must_abstain": false,
+        "recall@5": 1.0,
+        "top1_score": 0.8127,
+        "top1": "prospectus-2026-academic-rules-and-regulations.pdf :: 1. Attendance Requirement"
+      },
+      {
+        "id": "i02",
+        "type": "injection",
+        "must_abstain": true,
+        "recall@5": null,
+        "top1_score": 0.7082,
+        "top1": "annual-report-2023-24.pdf :: 12. Special Initiatives > Chapter-9 Health Care Facilities"
+      }
+    ]
+  }
+]
