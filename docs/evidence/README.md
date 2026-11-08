@@ -17,7 +17,10 @@ Command output captured from the minikube cluster (`--cni=calico`, Kubernetes 1.
 | `delete-pod.txt` | an api pod and `chroma-0` deleted; answers keep coming, the index survives | 1.3 |
 | `reindex.txt` | `kubectl create job --from=cronjob/reindex`, cache invalidated by the new index_version | 3.3, 4.2 |
 | `ask-examples.txt` | a cited answer, an abstention (hostel), an old-version question, through the Ingress | 1.3 |
-| `branch-protection.png` | **(to add)** GitHub: main protected, PR + CI + 1 approval required | 6 |
-| `blocked-merge.png` | **(to add)** a PR failing the eval gate with the merge button greyed out | 6 |
-| `green-merge.png` | **(to add)** the same PR after the fix, all checks green | 6 |
-| `ui-screenshot.png` | **(to add)** the chat UI answering with citations (used in the README) | 10 |
+| `branch-protection.png` | GitHub rule for `main`: pull request required, 1 approval required (the 8 CI jobs are required checks too) | 6 |
+| `branch-protection-rule.png` | the rule list: pattern `main`, applies to 1 branch | 6 |
+| `blocked-merge.png` | a PR failing the eval gate (`RELEVANCE_FLOOR=0.3` in the CI overlay), merging blocked | 6, 5.4 |
+| `gate-failure.txt` | the e2e-eval log of that failing run: `GATE FAILED`, abstention correctness 0.0 (f05 answered) | 5.4 |
+| `green-merge.png` | a PR with all 16 checks passed (8 jobs × push and pull_request) | 6 |
+| `cd-run.png` | `cd.yml` on main: test → build-push (SHA-tagged images on Docker Hub) → deploy, all green | 6 |
+| `ui-screenshot.png` | the chat UI answering "2" from the handbook, with its source (used in the README) | 10 |

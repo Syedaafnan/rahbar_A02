@@ -186,40 +186,21 @@ cited confidently, with no error anywhere. Evidence: `docs/evidence/embedding-pi
 
 ## 7. The failure that cost us more than an hour
 
-TO BE WRITTEN BY THE TEAM: the symptoms, what you wrongly believed first, and the
-exact command, metric or log line that finally told you the truth. Write it in your
-own words, about a failure you lived through.
+**Symptom.** On the cluster, "How many courses can a student repeat in the summer
+semester?" came back as *"Not covered by the documents"*. The right chunk was
+retrieved first (`academic-rules-handbook-jun-2026-pdf-0040`, score 0.84), and the
+answer took about 50 s.
 
-<!-- Reference only, delete when you write yours. One real candidate from this project,
-     as the AI assistant recorded it while debugging extraction:
+**What we wrongly believed first.** That the 3B model simply was not finding the answer
+in the evidence. We had just been fighting generation timeouts and prompt size, so we
+assumed this was the same kind of model problem.
 
-**Symptom.** The 2026 Academic Rules Handbook came out of extraction with every clause
-twice: "1.13 All classes are held …" at line 259 and again at line 314 of the dump,
-"5.4 Minimum CGPA …" twice, and so on. Words were also split ("attend ance",
-"s emester", "2. 00"). Retrieval would have returned two near-identical chunks in its
-top 5, halving the useful context, and "2.00" would never match "2. 00".
-
-**What we wrongly believed first.** That it was a two-up print layout, two book pages
-on one PDF page, and that each pair was being read twice. We tried cropping each page
-into left and right halves (`page.crop((0, 0, w/2, h))`). Each half came out as
-truncated words ("NATIONAL UNIVERSITY OF COMP" | "PUTER AND EMERGING SCIENCES"),
-which proved the pages were *not* spreads: the halves cut through single lines. Then
-we suspected a duplicated text layer (a hidden OCR layer under the real one) and
-compared fonts per character. That was not it either: one font, `MazzardH-Medium`.
-
-**What told us the truth.** A histogram of character x-positions on one page, from
-pdfplumber:
-
-```
-x0 histogram [(-360, 36), (-320, 100), (-280, 184), ... (-40, 52), (40, 33), (80, 114), ... (360, 140)]
-clause 1.9  -376 56     clause 1.15  43 130     clause 1.12 -340 200     clause 1.16  43 219
-```
-
-Half of the characters sit at **negative x**, outside the 420-point-wide page: the PDF
-carries the *previous* page's text beside each page, invisible in a viewer but read
-by every text extractor. The fix is one line in `indexer/pipeline/extract.py`,
-`visible = page.within_bbox(page.bbox)`: keep only what is on the page. That fixed
-the duplicates and the split words at once (both came from the overlapping text
-runs). **Lesson:** when extracted text looks wrong, look at where the characters
-are, not just what they say. The number that settled it was the sign of `x0`.
-     -->
+**What told us the truth.** The api's per-request log line said `"reason": "ungrounded"`,
+not `"model"`. So the model *had* answered. The raw model output showed why:
+`"answer": "2"`, cited as `{"section": "6.6", "page": 28}`. The model cited the clause
+number, not the section heading, so our citation check found no matching retrieved
+passage and dropped it. With no valid citation left, the answer was correctly refused.
+The fix was in `services/grounding.py`: a clause number is resolved to the retrieved
+passage that contains it, and two tests cover it. (We debugged this together with the
+AI assistant; see `AI-USAGE.md`.) **Lesson:** read the abstention `reason` before
+blaming the model.
