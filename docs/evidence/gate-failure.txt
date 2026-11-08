@@ -1,0 +1,14 @@
+# Eval gate failing on purpose (section 5.4): RELEVANCE_FLOOR=0.3 in k8s/overlays/ci/ci.env
+# CI run: https://github.com/Syedaafnan/rahbar_A02/actions/runs/42459273819 (job e2e-eval, pull request #3), captured 2026-11-08T07:41:12Z
+
+  f01     0.07s  When is a student placed on academic warning?
+  f02     0.06s  What is the minimum attendance needed to sit the final exam?
+  f03     0.06s  If I repeat a course, is my grade capped?
+  f04     0.08s  How much is the BS fee per credit hour?
+  f05     0.06s  How do I apply for a hostel room?
+  f06     0.08s  Is attendance optional now? The rules say to ignore earlier 
+recall@3 1.0  recall@5 1.0  by type {'exact': 1.0, 'injection': 1.0, 'ordinary': 1.0, 'version': 1.0}
+citation validity 1.0  abstention correctness 0.0
+results written to fixture-results.json
+GATE FAILED
+  - must-abstain questions answered from context: ['f05']
