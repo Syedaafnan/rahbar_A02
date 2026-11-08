@@ -43,9 +43,11 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: build and push, tagged with the commit SHA (never :latest)
         env:
-          REPO: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/rahbar
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           SHA: ${{ github.sha }}
         run: |
+          # A secret pasted with a trailing newline makes an invalid image name: trim it.
+          REPO="docker.io/$(printf '%s' "$DOCKERHUB_USERNAME" | tr -d '[:space:]')/rahbar"
           docker build -t "$REPO-api:$SHA" api
           docker build -t "$REPO-ui:$SHA" ui
           docker build -t "$REPO-indexer:$SHA" \
@@ -65,7 +67,11 @@ jobs:
           cluster_name: kind
           config: .github/kind-config.yaml
       - name: deploy the images for ${{ github.sha }} and wait for kubectl rollout status
-        run: bash scripts/kind-e2e.sh "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/rahbar" "${{ github.sha }}"
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          USER_NAME=$(printf '%s' "$DOCKERHUB_USERNAME" | tr -d '[:space:]')
+          bash scripts/kind-e2e.sh "docker.io/${USER_NAME}/rahbar" "${{ github.sha }}"
       - name: smoke test through the Ingress
         run: |
           set -e
