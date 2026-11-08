@@ -16,15 +16,4 @@ everything ourselves.
 | Claude Code | **CI/CD workflows** and `scripts/kind-e2e.sh`. | |
 | Claude Code | First drafts of **ADRs 0001 to 0004**, `ARCHITECTURE.md`, the README, and this file. | |
 
-<!-- Add a row (or fill the empty cells above) for every change you make yourselves:
-     what you edited, re-ran or measured, and why. A specific disclosure carries no penalty. -->
 
-## What we can explain without the tool
-
-Each partner should be able to walk through, unaided:
-
-- why the indexer is a Job (ADR 0001)
-- how the embedding pin keeps a mismatched pod at 0/1 READY
-- why the superseded filter, not the prompt, prevents failure mode E
-- how the cache is invalidated without the indexer reaching Redis
-- how the CI gate decides pass or fail
