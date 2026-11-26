@@ -1,0 +1,31 @@
+# A03 volumes that outlive every pod (F1, F2, F4).
+#
+#   traces        the api pods append one trace line per query (traces-<pod>.jsonl);
+#                 scripts/trace_summary.py and scripts/trace_show.py read it
+#   eval-results  the evaluation Jobs write their timestamped result files and the
+#                 gate decisions here; scripts/lake.py pull copies them to eval/results/
+#
+# On minikube's hostpath provisioner a ReadWriteOnce claim can be mounted by several
+# pods on the one node, so all api replicas share `traces`. On a multi-node cluster
+# this would be ReadWriteMany (or a log shipper reading stdout instead).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: traces
+  labels: { app.kubernetes.io/name: traces, app.kubernetes.io/part-of: rahbar }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 512Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: eval-results
+  labels: { app.kubernetes.io/name: eval, app.kubernetes.io/part-of: rahbar }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 256Mi

@@ -19,6 +19,10 @@ data:
   # The indexer writes this into the Chroma collection metadata; the api refuses to
   # become ready if the two disagree.
   EMBED_MODEL: "nomic-embed-text"
+  # A03: task prefixes belong to the model, so they live next to it. A candidate
+  # model brings its own (k8s/candidate/configmap-candidate.yaml).
+  EMBED_QUERY_PREFIX: "search_query: "
+  EMBED_DOC_PREFIX: "search_document: "
 
   # --- vector store and cache ------------------------------------------------
   CHROMA_HOST: "chroma"
@@ -30,7 +34,15 @@ data:
   # --- indexing (unit: approximate tokens; measured in docs/PIPELINE.md) ------
   CHUNK_SIZE: "400"
   CHUNK_OVERLAP: "50"
-  CORPUS_DIR: "/corpus"
+  # --- A03 data lake (PVC corpus-data, mounted at /data in the indexer) ---------
+  # lake/raw/<batch>/ incoming · lake/quarantine/ failed verification ·
+  # lake/archive/ superseded versions · state/ registry · reports/ per-run reports
+  DATA_DIR: "/data"
+  CORPUS_DIR: "/data/lake/raw"
+  # Whole-document cosine at or above this = near-duplicate. Calibrated on our corpus:
+  # distinct documents reach 0.956 at most, the reworded copy 0.995
+  # (eval/results/near-dup-calibration.txt).
+  NEAR_DUP_THRESHOLD: "0.96"
 
   # --- querying --------------------------------------------------------------
   TOP_K: "5"
@@ -53,5 +65,9 @@ data:
   # 0.1: answers are facts extracted into strict JSON; we want the same answer for
   # the same evidence, not creativity. (0 to 0.3 is the band from section 3.4.)
   TEMPERATURE: "0.1"
+  # A03: a fixed seed, so the same evidence gives the same answer (stochasticity test).
+  LLM_SEED: "42"
+  # A03: every query writes one trace line to stdout AND appends it here (PVC traces).
+  TRACE_DIR: "/traces"
 
   LOG_LEVEL: "INFO"

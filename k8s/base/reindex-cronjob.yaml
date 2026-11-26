@@ -1,18 +1,19 @@
-# Weekly re-index with the SAME image and arguments as the indexer Job. It is also the
-# template for an on-demand run, with no redeploy and no downtime:
-#   kubectl create job --from=cronjob/reindex manual-reindex-1 -n rahbar
+# Scheduled re-ingestion (A03 F2) with the SAME image and arguments as the indexer
+# Job: verify + incremental update of the data lake and the vector store. On an
+# unchanged corpus a run embeds 0 chunks. It is also the template for an on-demand run:
+#   kubectl create job --from=cronjob/reindex ingest-1 -n rahbar
 apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: reindex
   labels: { app.kubernetes.io/name: indexer, app.kubernetes.io/part-of: rahbar }
 spec:
-  schedule: "0 3 * * 0"           # Sundays 03:00
+  schedule: "0 3 * * *"           # every night at 03:00 (cheap: unchanged = 0 embeddings)
   timeZone: Asia/Karachi
   # Forbid: a second indexer must never start while one is still writing (one writer).
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 3600
-  successfulJobsHistoryLimit: 2
+  successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 2
   jobTemplate:
     metadata:
@@ -44,8 +45,8 @@ spec:
               imagePullPolicy: IfNotPresent
               command: ["python", "/app/corpus/fetch.py"]
               env:
-                - { name: CORPUS_RAW, value: /corpus }
-                - { name: CORPUS_MANIFEST_OUT, value: /corpus/MANIFEST.fetched.md }
+                - { name: CORPUS_RAW, value: /data/lake/raw/base }
+                - { name: CORPUS_MANIFEST_OUT, value: /data/state/MANIFEST.fetched.md }
                 - { name: HOME, value: /tmp }
               resources:
                 requests:
@@ -61,7 +62,7 @@ spec:
                   drop:
                     - ALL
               volumeMounts:
-                - { name: corpus, mountPath: /corpus }
+                - { name: data, mountPath: /data }
                 - { name: tmp, mountPath: /tmp }
           containers:
             - name: indexer
@@ -87,10 +88,10 @@ spec:
                   drop:
                     - ALL
               volumeMounts:
-                - { name: corpus, mountPath: /corpus, readOnly: true }
+                - { name: data, mountPath: /data }
                 - { name: tmp, mountPath: /tmp }
           volumes:
-            - name: corpus
+            - name: data
               persistentVolumeClaim:
                 claimName: corpus-data
             - name: tmp

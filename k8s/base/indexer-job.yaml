@@ -1,6 +1,11 @@
-# The indexer: the ONLY writer to Chroma (section 4.2, ADR 0001).
-# Runs once, exits, and is re-run from the CronJob's template when the material
-# changes:   kubectl create job --from=cronjob/reindex manual-reindex-1 -n rahbar
+# The indexer: ingestion WITH verification (A03 Part A), and the ONLY writer to Chroma
+# (section 4.2, ADR 0001). Runs once, exits, and is re-run from the CronJob's template:
+#   kubectl create job --from=cronjob/reindex ingest-1 -n rahbar
+#   python scripts/run_indexer.py                 # same, then waits and prints the logs
+#
+# One run = the data management lifecycle of the paper (Figure 3):
+#   ingest (fetch + every batch in lake/raw) -> verify (4 checks) -> update the data
+#   lake (quarantine / archive) -> update the retrieval sources (embed only new chunks)
 #
 # Its pod template is kept identical to reindex-cronjob.yaml on purpose (same image,
 # same args, same limits). If you change one, change the other.
@@ -10,10 +15,12 @@ metadata:
   name: corpus-data
   labels: { app.kubernetes.io/name: indexer, app.kubernetes.io/part-of: rahbar }
 spec:
+  # The data lake: raw batches, quarantine, archived versions, registry, reports.
+  # Survives pod restarts and Job deletion (A03 F1).
   accessModes: ["ReadWriteOnce"]
   resources:
     requests:
-      storage: 512Mi
+      storage: 2Gi
 ---
 apiVersion: batch/v1
 kind: Job
@@ -41,15 +48,15 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       initContainers:
-        # Step 1: download the documents in corpus/sources.yaml into the corpus PVC.
-        # Files already on the PVC are kept, so re-indexing does not download again.
+        # Step 1: download the documents in corpus/sources.yaml into the base batch of
+        # the data lake. Files already there are kept, so re-indexing downloads nothing.
         - name: fetch-corpus
           image: rahbar-indexer
           imagePullPolicy: IfNotPresent
           command: ["python", "/app/corpus/fetch.py"]
           env:
-            - { name: CORPUS_RAW, value: /corpus }
-            - { name: CORPUS_MANIFEST_OUT, value: /corpus/MANIFEST.fetched.md }
+            - { name: CORPUS_RAW, value: /data/lake/raw/base }
+            - { name: CORPUS_MANIFEST_OUT, value: /data/state/MANIFEST.fetched.md }
             - { name: HOME, value: /tmp }
           resources:
             requests:
@@ -65,20 +72,20 @@ spec:
               drop:
                 - ALL
           volumeMounts:
-            - { name: corpus, mountPath: /corpus }
+            - { name: data, mountPath: /data }
             - { name: tmp, mountPath: /tmp }
       containers:
         - name: indexer
           image: rahbar-indexer
           imagePullPolicy: IfNotPresent
-          args: []                      # the real pipeline; `--dummy` for week-1 tests
+          args: []                      # ingest; scripts/run_indexer.py adds --count-by-doc etc.
           envFrom:
             - configMapRef:
                 name: rahbar-config
           env:
             - { name: HOME, value: /tmp }
-          # Peak from `kubectl top pods` during OCR + embedding:
-          # docs/evidence/kubectl-top.txt and docs/ENGINEERING-NOTES.md Q4.
+          # Requests and limits from `kubectl top pod` during a full ingest with OCR
+          # (A03 F5, numbers in docs/A03-REPORT.md and eval/results/resources-*.txt).
           resources:
             requests:
               cpu: 500m
@@ -93,10 +100,12 @@ spec:
               drop:
                 - ALL
           volumeMounts:
-            - { name: corpus, mountPath: /corpus, readOnly: true }
+            # read-write: verification moves failed files to lake/quarantine and copies
+            # superseded versions to lake/archive (A03 A1/A2)
+            - { name: data, mountPath: /data }
             - { name: tmp, mountPath: /tmp }
       volumes:
-        - name: corpus
+        - name: data
           persistentVolumeClaim:
             claimName: corpus-data
         - name: tmp

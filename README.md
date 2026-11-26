@@ -152,6 +152,40 @@ kubectl -n rahbar rollout restart deployment/api
 In hosted mode the question and the retrieved public passages are sent to the provider
 ([ADR 0004](docs/adr/0004-llm-provider-and-data-governance.md)). Embeddings stay local.
 
+## Assignment 03: the RAGOps layer (Parts A to F)
+
+Built on the A02 pipeline, following Xu et al., *RAGOps* (2026), Figure 3: a data
+lifecycle (ingest → verify → update data lake → update retrieval sources) and a
+software lifecycle (offline testing → release gate → controlled rollout → live
+monitoring → coverage check), both on Kubernetes. Bring-up from a fresh cluster:
+[k8s/README.md](k8s/README.md). Report: [docs/A03-REPORT.md](docs/A03-REPORT.md).
+Results: `eval/results/` (timestamped JSON + Markdown summaries) and `traces/`.
+
+Every command runs from the repository root in Git Bash, with the cluster from
+k8s/README.md up. `scripts/lake.py pull` copies the files the Jobs wrote on the
+volumes into `eval/results/cluster/`, `eval/results/ingest-reports/` and `traces/`.
+
+| Part | What | Exact command |
+| --- | --- | --- |
+| A1 | ingest + verify every batch (report per run, failures to quarantine) | `python scripts/lake.py push corpus/batch_b && python scripts/run_indexer.py`; show a stored report later: `python scripts/lake.py report --batch batch_b` |
+| A2 | unchanged corpus embeds 0 chunks | `python scripts/run_indexer.py` |
+| A2 | changed document replaces only its chunks | `python scripts/lake.py put corpus/demos/b10-student-clubs-and-societies-policy.v2.md batch_b/b10-student-clubs-and-societies-policy.md && python scripts/run_indexer.py` |
+| A2 | deleted document leaves no orphans | `python scripts/lake.py rm batch_b/b03-laboratory-safety-policy.md && python scripts/run_indexer.py && python scripts/run_indexer.py --count-by-doc` |
+| A2 | rollback to an archived version, and back | `python scripts/run_indexer.py --restore fee-structure-page-html` then `python scripts/run_indexer.py --unpin fee-structure && python scripts/run_indexer.py` |
+| B | whole suite, three levels, two seeded runs, timestamped result file | `kubectl apply -f k8s/eval-baseline-job.yaml` (locally: `python eval/suite.py --api http://localhost:18000 --label baseline --repeat 2`) |
+| B | hand labels for the judge, then agreement | `python eval/label_answers.py eval/results/<file>.json --who NAME` then `python eval/label_answers.py eval/results/<file>.json --report` |
+| C1 | candidate (embedding model mxbai-embed-large) vs baseline | `kubectl apply -k k8s/candidate && kubectl apply -f k8s/candidate/indexer-candidate-job.yaml && python scripts/release.py stage good && python scripts/release.py evaluate good` |
+| C2 | release gate: one fails, one passes | `python scripts/release.py stage bad && python scripts/release.py evaluate bad` · `python eval/gate.py --candidate eval/results/<cand>.json --baseline eval/results/<base>.json` |
+| C3 / F3 | roll out, or refuse; undo | `python scripts/release.py promote bad` (refused) · `python scripts/release.py promote good` · `python scripts/release.py undo` · `python scripts/release.py ask "..."` |
+| D1/D2 | trace record; rebuild the prompt for a trace id | `kubectl -n rahbar logs deploy/api \| grep '"type": "trace"' \| tail -1` · `python scripts/trace_show.py <trace_id>` |
+| D3 | metrics over a time window | `python scripts/trace_summary.py --since 2h` · `kubectl -n rahbar port-forward svc/api 18000:8000` then `curl localhost:18000/metrics` |
+| D4 | guardrail action in the trace (Batch B injected document) | `python scripts/release.py ask "Can I get an exam rescheduled because I have a family wedding?" --endpoint ask` |
+| E2/E4 | coverage before / after the new golden questions (exit 1 below threshold) | `python eval/coverage_check.py --label before` · `python eval/coverage_check.py --label after --golden eval/golden.jsonl eval/golden_e4.jsonl` · on the cluster: `kubectl apply -f k8s/coverage-job.yaml` |
+| E3 | data drift: suite before and after Batch B | `kubectl apply -f k8s/eval-job.yaml` before and after `run_indexer.py` with Batch B |
+| F1/F2 | deploy; ingestion Job + CronJob; eval Job; gate ConfigMap | `kubectl apply -k k8s/overlays/dev` · `kubectl apply -f k8s/eval-job.yaml` · `kubectl -n rahbar patch configmap rahbar-gate --type merge --patch-file k8s/gate-strict.patch.json && kubectl apply -f k8s/gate-job.yaml` |
+| F4 | traces on stdout and on the volume; metrics via port-forward | `kubectl -n rahbar logs -l app.kubernetes.io/component=query --prefix \| grep trace` · `python scripts/lake.py pull` |
+| F5 | resource measurements | `kubectl top pods -n rahbar --containers` (numbers in `eval/results/resources.txt`) |
+
 ## API
 
 | Method | Path | What it does |
@@ -199,4 +233,4 @@ Ingress.
 ## Team
 
 <!-- fill in -->
-Built by a pair for CS4032 Software Construction & Development, Assignment 02.
+Built by a pair for CS4032 Software Construction & Development, Assignments 02 and 03.

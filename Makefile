@@ -46,14 +46,15 @@ cluster: ## start minikube with Calico, then enable metrics-server and ingress
 	minikube addons enable metrics-server
 	minikube addons enable ingress
 
-images: ## build the three images and load them into minikube (needs yours: Dockerfiles)
+images: ## build the four images (api, indexer, ui, eval) and load them into minikube (needs yours: Dockerfiles)
 	docker build -t rahbar-api:$(TAG) api
 	docker build -t rahbar-indexer:$(TAG) --build-context corpus=corpus --build-context fixtures=eval/fixtures indexer
 	docker build -t rahbar-ui:$(TAG) ui
+	docker build -t rahbar-eval:$(TAG) eval
 	# Load as single-platform tarballs: with Docker Desktop's containerd image store,
 	# loading the image by name can hand minikube a multi-platform index it unpacks badly
 	# ("exec format error" in the pod).
-	for i in api indexer ui; do \
+	for i in api indexer ui eval; do \
 	  docker save --platform linux/amd64 -o rahbar-$$i.tar rahbar-$$i:$(TAG) && \
 	  minikube image load rahbar-$$i.tar && rm -f rahbar-$$i.tar; \
 	done

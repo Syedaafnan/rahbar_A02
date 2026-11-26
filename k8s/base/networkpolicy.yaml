@@ -6,6 +6,9 @@
 #   ui            -> (nothing: the browser, not the pod, calls /api)
 #   api           -> chroma:8000, redis:6379, LLM (Ollama :11434 or hosted :443)
 #   indexer       -> chroma:8000, Ollama :11434 (embeddings), website :80/:443 (fetch)
+#   eval (A03)    -> api:8000, api-candidate:8000, chroma:8000 (read a chunk sample),
+#                    Ollama :11434 (module-level embeddings, LLM judge), hosted :443
+#   api-candidate -> same as api (k8s/candidate/networkpolicy.yaml)
 #   every pod     -> kube-dns :53
 #
 # The cache is invalidated without the indexer touching Redis: the indexer stamps an
@@ -65,6 +68,8 @@ spec:
             matchLabels: { kubernetes.io/metadata.name: ingress-nginx }
         - podSelector:
             matchLabels: { app.kubernetes.io/name: ui }
+        - podSelector:                                   # A03: the evaluation Jobs
+            matchLabels: { app.kubernetes.io/name: eval }
       ports:
         - { protocol: TCP, port: 8000 }
   egress:
@@ -102,6 +107,10 @@ spec:
             matchLabels: { app.kubernetes.io/name: api }
         - podSelector:
             matchLabels: { app.kubernetes.io/name: indexer }
+        - podSelector:                                   # A03: the candidate release
+            matchLabels: { app.kubernetes.io/name: api-candidate }
+        - podSelector:                                   # A03: eval reads a chunk sample
+            matchLabels: { app.kubernetes.io/name: eval }
       ports:
         - { protocol: TCP, port: 8000 }
   egress: []                       # chroma calls nobody
@@ -118,6 +127,8 @@ spec:
     - from:
         - podSelector:
             matchLabels: { app.kubernetes.io/name: api }
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: api-candidate }
       ports:
         - { protocol: TCP, port: 6379 }
   egress: []
@@ -143,3 +154,29 @@ spec:
         - { protocol: TCP, port: 11434 }   # embeddings
         - { protocol: TCP, port: 80 }      # corpus fetch (nu.edu.pk serves some files on http)
         - { protocol: TCP, port: 443 }
+---
+# A03: the evaluation, gate and coverage Jobs. Nothing calls them.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eval
+spec:
+  podSelector:
+    matchLabels: { app.kubernetes.io/name: eval }
+  policyTypes: ["Ingress", "Egress"]
+  ingress: []
+  egress:
+    - to:
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: api }
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: api-candidate }
+        - podSelector:
+            matchLabels: { app.kubernetes.io/name: chroma }
+      ports:
+        - { protocol: TCP, port: 8000 }
+    - to:
+        - ipBlock: { cidr: 0.0.0.0/0 }
+      ports:
+        - { protocol: TCP, port: 11434 }   # Ollama: module-level embeddings, LLM judge
+        - { protocol: TCP, port: 443 }     # hosted judge, if JUDGE_PROVIDER=hosted

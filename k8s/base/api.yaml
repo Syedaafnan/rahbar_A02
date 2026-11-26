@@ -16,7 +16,10 @@ spec:
       maxUnavailable: 0    # ... and never drop below 3 ready pods while doing it
   template:
     metadata:
-      labels: { app.kubernetes.io/name: api, app.kubernetes.io/part-of: rahbar }
+      # component=query is shared with api-candidate: scripts/trace_show.py --kubectl
+      # reads the traces of both from `kubectl logs -l app.kubernetes.io/component=query`.
+      labels: { app.kubernetes.io/name: api, app.kubernetes.io/part-of: rahbar,
+                app.kubernetes.io/component: query }
     spec:
       serviceAccountName: rahbar-api
       # No CHROMA_PORT=tcp://... style variables from Services: chroma reads every
@@ -46,6 +49,10 @@ spec:
           env:
             - name: HOME
               value: /tmp
+            # Written into every trace record. A release swaps the ConfigMap this pod
+            # reads (scripts/release.py promote), not this value.
+            - name: RELEASE
+              value: live
             - name: LLM_API_KEY          # only used when LLM_PROVIDER=hosted
               valueFrom:
                 secretKeyRef: { name: rahbar-secret, key: LLM_API_KEY, optional: true }
@@ -87,9 +94,12 @@ spec:
               exec: { command: ["sleep", "10"] }
           volumeMounts:
             - { name: tmp, mountPath: /tmp }
+            - { name: traces, mountPath: /traces }     # A03 F4: one traces-<pod>.jsonl per pod
       volumes:
         - name: tmp
           emptyDir: { sizeLimit: 64Mi }
+        - name: traces
+          persistentVolumeClaim: { claimName: traces }
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
