@@ -1,0 +1,67 @@
+# The Part B suite against the CANDIDATE release (A03 C1, F3): api-candidate, with the
+# candidate's own ConfigMap (embedding model, prefixes, collection). Exits 1 when the
+# release gate rejects the candidate; scripts/release.py promote refuses to roll out
+# a candidate whose eval Job failed.
+#
+#   kubectl -n rahbar delete job eval-candidate --ignore-not-found
+#   kubectl apply -f k8s/eval-candidate-job.yaml && kubectl -n rahbar logs -f job/eval-candidate
+#
+# CANDIDATE_CONFIG below is rahbar-config-candidate (the good candidate). For the
+# deliberately bad one use k8s/eval-bad-job.yaml (or: python scripts/release.py evaluate bad).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: eval-candidate
+  namespace: rahbar
+  labels: { app.kubernetes.io/name: eval, app.kubernetes.io/part-of: rahbar }
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 21600
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: eval, app.kubernetes.io/part-of: rahbar }
+    spec:
+      restartPolicy: Never
+      serviceAccountName: rahbar-eval
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: eval
+          image: rahbar-eval:dev
+          imagePullPolicy: IfNotPresent
+          args: ["suite.py", "--api", "http://api-candidate:8000", "--label", "candidate", "--gate"]
+          envFrom:
+            - configMapRef: { name: rahbar-config-candidate }
+          env:
+            - { name: HOME, value: /tmp }
+            - { name: JUDGE, value: llm }
+            - { name: JUDGE_PROVIDER, value: ollama }
+            # the judge stays the live LLM, so baseline and candidate are judged alike
+            - { name: JUDGE_MODEL, value: "llama3.2:3b" }
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef: { name: rahbar-secret, key: LLM_API_KEY, optional: true }
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 500m, memory: 256Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - { name: results, mountPath: /results }
+            - { name: gate, mountPath: /config, readOnly: true }
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: results
+          persistentVolumeClaim: { claimName: eval-results }
+        - name: gate
+          configMap: { name: rahbar-gate }
+        - name: tmp
+          emptyDir: { sizeLimit: 64Mi }

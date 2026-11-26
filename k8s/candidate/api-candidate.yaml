@@ -1,0 +1,91 @@
+# The CANDIDATE release (A03 C3, F3): a second Deployment of the same api image, with
+# its own Service and its own ConfigMap, so its own embedding model and collection.
+# It never receives user traffic (no Ingress rule); only the eval Jobs call it.
+#
+# Which candidate it serves is the ConfigMap in envFrom:
+#   rahbar-config-candidate   the change under test (configmap-candidate.yaml)
+#   rahbar-config-bad         a deliberately bad candidate (configmap-bad.yaml)
+# scripts/release.py stage good|bad switches it and restarts the pod.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-candidate
+  labels: { app.kubernetes.io/name: api-candidate, app.kubernetes.io/part-of: rahbar }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels: { app.kubernetes.io/name: api-candidate }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxSurge: 1, maxUnavailable: 0 }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: api-candidate, app.kubernetes.io/part-of: rahbar,
+                app.kubernetes.io/component: query }
+    spec:
+      serviceAccountName: rahbar-api
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 360
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: api
+          image: rahbar-api
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8000 }
+          envFrom:
+            - configMapRef: { name: rahbar-config-candidate }
+          env:
+            - { name: HOME, value: /tmp }
+            - { name: RELEASE, value: candidate }
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef: { name: rahbar-secret, key: LLM_API_KEY, optional: true }
+          resources:
+            requests: { cpu: 100m, memory: 160Mi }
+            limits: { cpu: 500m, memory: 384Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          startupProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 2
+            failureThreshold: 30
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 20
+            failureThreshold: 3
+            timeoutSeconds: 2
+          # Ready only when ITS collection exists and was built with ITS model (the
+          # embedding pin): a candidate whose index Job has not run stays 0/1.
+          readinessProbe:
+            httpGet: { path: /readyz, port: http }
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 3
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+            - { name: traces, mountPath: /traces }
+      volumes:
+        - name: tmp
+          emptyDir: { sizeLimit: 64Mi }
+        - name: traces
+          persistentVolumeClaim: { claimName: traces }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-candidate
+  labels: { app.kubernetes.io/name: api-candidate, app.kubernetes.io/part-of: rahbar }
+spec:
+  type: ClusterIP
+  selector: { app.kubernetes.io/name: api-candidate }
+  ports:
+    - { name: http, port: 8000, targetPort: http }

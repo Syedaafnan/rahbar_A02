@@ -1,0 +1,1 @@
+{"data": {"gate.yaml": "gate:\n  recall_at_5_max_drop: 0.0\n  faithfulness_min: 0.99\n  citation_validity_min: 0.95\n  abstention_not_below_baseline: true\n  p95_latency_ms_max: 180000\ncoverage:\n  similarity_threshold: 0.68\n  min_share: 0.85\n"}}
