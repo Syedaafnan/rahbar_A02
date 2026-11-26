@@ -102,9 +102,10 @@
    "prompt": "evidence-quoted v2"
   },
   "judge_agreement": {
-   "labelled": 0,
-   "agreement": null,
-   "note": "no hand label matches this run's answers: run eval/label_answers.py"
+   "labelled": 10,
+   "agreement": 0.9,
+   "judge_says_faithful_human_not": 0,
+   "judge_says_unfaithful_human_yes": 1
   },
   "abstention_correctness": 1.0,
   "must_abstain_questions": 7,

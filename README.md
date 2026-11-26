@@ -158,7 +158,7 @@ Built on the A02 pipeline, following Xu et al., *RAGOps* (2026), Figure 3: a dat
 lifecycle (ingest → verify → update data lake → update retrieval sources) and a
 software lifecycle (offline testing → release gate → controlled rollout → live
 monitoring → coverage check), both on Kubernetes. Bring-up from a fresh cluster:
-[k8s/README.md](k8s/README.md). Report: [docs/A03-REPORT.md](docs/A03-REPORT.md).
+[k8s/README.md](k8s/README.md). The report is submitted separately as a PDF.
 Results: `eval/results/` (timestamped JSON + Markdown summaries) and `traces/`.
 
 Every command runs from the repository root in Git Bash, with the cluster from

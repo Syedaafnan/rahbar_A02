@@ -85,7 +85,7 @@ spec:
           env:
             - { name: HOME, value: /tmp }
           # Requests and limits from `kubectl top pod` during a full ingest with OCR
-          # (A03 F5, numbers in docs/A03-REPORT.md and eval/results/resources-*.txt).
+          # (A03 F5, numbers in eval/results/resources-*.txt).
           resources:
             requests:
               cpu: 500m
