@@ -16,12 +16,14 @@ documents:
     url: http://nu.edu.pk/public/downloads/Academic-Rules-Undergrad-Aug-2023.pdf
     doc_version: "2023-08"
     superseded: true
+    family: undergraduate-academic-rules     # A03: the recency check compares versions in a family
     notes: Still linked from /Student/RulesUndergrad. Did not open on 1 Nov 2026; confirm it downloads.
 
   - name: Academic Rules Handbook (Jun 2026)
     url: https://nu.edu.pk/public/downloads/Academic_Rules_Handbook_2026.pdf
     doc_version: "2026-06"
     superseded: false
+    family: undergraduate-academic-rules
     notes: About 53 pages, numbered clauses (attendance 1.21, academic warning 5.4).
 
   - name: Prospectus 2026 - Academic Rules and Regulations
@@ -52,6 +54,7 @@ documents:
     url: https://www.nu.edu.pk/Admissions/FeeStructure
     doc_version: "2026-27"
     superseded: false
+    family: fee-structure                    # Batch B brings the 2027-28 version
 
   - name: Grading page
     url: https://www.nu.edu.pk/Student/Grading

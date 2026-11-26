@@ -20,6 +20,7 @@ from __future__ import annotations
 import re
 import unicodedata
 from collections import Counter
+from dataclasses import replace
 
 from .models import Document, Page
 
@@ -28,7 +29,7 @@ REPEAT_SHARE = 0.4
 
 _LETTER_SPACED = re.compile(r"\b(?:[A-Za-z] ){3,}[A-Za-z]\b")
 _SPLIT_DECIMAL = re.compile(r"(\d)\. (\d{2})\b")
-_PAGE_NUMBER = re.compile(r"^\s*(page\s*)?\d{1,3}(\s*of\s*\d{1,3})?\s*$", re.I)
+_PAGE_NUMBER = re.compile(r"^\s*(page\s*)?\d{1,3}(\s*of\s*\d{1,3})?\s*$", re.IGNORECASE)
 
 
 def clean(doc: Document) -> Document:
@@ -38,7 +39,8 @@ def clean(doc: Document) -> Document:
         kept = [line for line in page.text.splitlines()
                 if _signature(line) not in repeated and not _PAGE_NUMBER.match(line)]
         page.text = "\n".join(kept)
-    return Document(doc.source, doc.doc_version, doc.superseded, pages)
+    # replace() keeps the A03 provenance fields (doc_id, sha256, title, ...).
+    return replace(doc, pages=pages)
 
 
 def clean_text(text: str) -> str:

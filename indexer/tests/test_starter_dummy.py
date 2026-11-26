@@ -45,7 +45,7 @@ def test_dummy_index_writes_three_chunks_and_records_the_model() -> None:
     assert col.metadata["dimension"] == DUMMY_DIM
     for _doc, vector, meta in col.rows.values():
         assert len(vector) == DUMMY_DIM
-        assert set(meta) == {"source", "section", "page", "doc_version", "superseded"}
+        assert {"source", "section", "page", "doc_version", "superseded"} <= set(meta)
 
 
 def test_dummy_index_can_run_twice() -> None:

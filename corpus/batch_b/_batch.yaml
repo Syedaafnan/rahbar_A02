@@ -1,0 +1,80 @@
+# Batch B (A03 Part A): 12 synthetic test documents with planted problems.
+# The batch manifest declares each file's metadata; the verification stage checks it.
+# Every document here was written for the assignment; none is a university document.
+#
+#   file                                    planted problem              expected check
+#   b01-library-borrowing-rules.md          none (clean)                 pass -> index
+#   b02-library-borrowing-rules-copy.md     exact duplicate of b01       uniqueness FAIL
+#   b03-laboratory-safety-policy.md         none (clean)                 pass -> index
+#   b04-laboratory-safety-policy (1).md     exact duplicate of b03       uniqueness FAIL
+#   b05-library-borrowing-rules-revised.md  near-duplicate of b01        uniqueness FAIL
+#   b06-transport-policy.pdf                truncated / corrupt PDF      completeness + quality FAIL
+#   b07-scholarship-notice.md               no metadata at all           completeness FAIL
+#   b08-fee-structure-2027-28.html          newer version of the fee     pass -> index; the base
+#                                           page (family fee-structure)  fee page fails recency -> archive
+#   b09-exam-rescheduling-guidelines.md     injected instruction         passes verification on
+#                                                                        purpose; the query-time
+#                                                                        guardrail drops the chunk (D4)
+#   b10-student-clubs-and-societies-policy  none (clean)                 pass -> index
+#   b11-scanned-notice-ocr.txt              garbled OCR output           quality FAIL
+#   b12-empty-form.md                       almost no text               quality FAIL
+documents:
+  - file: b01-library-borrowing-rules.md
+    title: Library Borrowing Rules
+    source: "batch_b (synthetic test document, CS4032 A03)"
+    doc_version: "2026-09"
+    date: "2026-09-01"
+    family: library-borrowing-rules
+  - file: b02-library-borrowing-rules-copy.md
+    title: Library Borrowing Rules (copy)
+    source: "batch_b (synthetic test document, CS4032 A03)"
+    doc_version: "2026-09"
+    family: library-borrowing-rules-copy
+  - file: b03-laboratory-safety-policy.md
+    title: Laboratory Safety Policy
+    source: "batch_b (synthetic test document, CS4032 A03)"
+    doc_version: "2026-08"
+    family: laboratory-safety
+  - file: b04-laboratory-safety-policy (1).md
+    title: Laboratory Safety Policy
+    source: "batch_b (synthetic test document, CS4032 A03), uploaded twice"
+    doc_version: "2026-08"
+    family: laboratory-safety-upload
+  - file: b05-library-borrowing-rules-revised.md
+    title: Library Borrowing Rules (revised wording)
+    source: "batch_b (synthetic test document, CS4032 A03)"
+    doc_version: "2026-10"
+    family: library-rules-revised
+  - file: b06-transport-policy.pdf
+    title: Transport Policy
+    source: "batch_b (synthetic test document, CS4032 A03)"
+    doc_version: "2026-11"
+    pages: 3
+    family: transport
+  # b07-scholarship-notice.md: deliberately NOT listed -> no title, source or date
+  - file: b08-fee-structure-2027-28.html
+    title: Fee Structure 2027-28
+    source: "batch_b (synthetic test document, CS4032 A03)"
+    doc_version: "2027-28"
+    date: "2027-06-01"
+    family: fee-structure
+  - file: b09-exam-rescheduling-guidelines.md
+    title: Exam Rescheduling Guidelines
+    source: "batch_b (synthetic test document, CS4032 A03)"
+    doc_version: "2026-09"
+    family: exam-rescheduling
+  - file: b10-student-clubs-and-societies-policy.md
+    title: Student Clubs and Societies Policy
+    source: "batch_b (synthetic test document, CS4032 A03)"
+    doc_version: "2026-09"
+    family: student-societies
+  - file: b11-scanned-notice-ocr.txt
+    title: Scanned Notice
+    source: "batch_b (synthetic test document, CS4032 A03)"
+    doc_version: "2026-10"
+    family: scanned-notice
+  - file: b12-empty-form.md
+    title: Course Feedback Form
+    source: "batch_b (synthetic test document, CS4032 A03)"
+    doc_version: "2026-10"
+    family: feedback-form
