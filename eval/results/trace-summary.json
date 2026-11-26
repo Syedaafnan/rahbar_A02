@@ -1,0 +1,194 @@
+{
+ "window": {
+  "from": "2026-11-26T12:52:29.112067+00:00",
+  "to": "2026-11-26T13:22:29.112067+00:00"
+ },
+ "all": {
+  "traces": 34,
+  "asks": 32,
+  "retrieves": 2,
+  "top1_similarity": {
+   "n": 31,
+   "min": 0.583,
+   "p25": 0.6795,
+   "p50": 0.7571,
+   "p75": 0.8207,
+   "max": 0.8662,
+   "histogram": {
+    "0.00-0.50": 0,
+    "0.50-0.55": 0,
+    "0.55-0.60": 3,
+    "0.60-0.65": 2,
+    "0.65-0.70": 5,
+    "0.70-0.75": 4,
+    "0.75-0.80": 6,
+    "0.80-0.85": 9,
+    "0.85-0.90": 2,
+    "0.90-1.00": 0
+   }
+  },
+  "abstention_rate": 0.3438,
+  "outcomes": {
+   "answered": 18,
+   "model": 7,
+   "cache": 3,
+   "ungrounded": 1,
+   "floor": 3
+  },
+  "cache_hit_rate": 0.3,
+  "cache": {
+   "hit": 3,
+   "miss": 7,
+   "skip": 22
+  },
+  "latency_p95_ms": {
+   "cache": 9.28,
+   "embed": 398.07,
+   "generate": 71966.71,
+   "guardrail": 3.1,
+   "retrieve": 67.62,
+   "total": 72340.99,
+   "validate": 0.14
+  },
+  "injection_flags": {
+   "total": 4,
+   "passages_dropped": 2,
+   "questions_flagged": 2,
+   "by_pattern": {
+    "ignore-instructions": 3,
+    "role-change": 1
+   },
+   "documents": [
+    "b09-exam-rescheduling-guidelines-md"
+   ]
+  },
+  "collections": {
+   "rahbar / nomic-embed-text": 11,
+   "rahbar-mxbai / mxbai-embed-large": 23
+  }
+ },
+ "by_release": {
+  "candidate": {
+   "traces": 22,
+   "asks": 22,
+   "retrieves": 0,
+   "top1_similarity": {
+    "n": 22,
+    "min": 0.583,
+    "p25": 0.6627,
+    "p50": 0.7376,
+    "p75": 0.8155,
+    "max": 0.8662,
+    "histogram": {
+     "0.00-0.50": 0,
+     "0.50-0.55": 0,
+     "0.55-0.60": 3,
+     "0.60-0.65": 2,
+     "0.65-0.70": 4,
+     "0.70-0.75": 3,
+     "0.75-0.80": 4,
+     "0.80-0.85": 5,
+     "0.85-0.90": 1,
+     "0.90-1.00": 0
+    }
+   },
+   "abstention_rate": 0.4545,
+   "outcomes": {
+    "model": 6,
+    "ungrounded": 1,
+    "answered": 12,
+    "floor": 3
+   },
+   "cache_hit_rate": null,
+   "cache": {
+    "hit": 0,
+    "miss": 0,
+    "skip": 22
+   },
+   "latency_p95_ms": {
+    "embed": 387.15,
+    "generate": 71966.71,
+    "guardrail": 3.1,
+    "retrieve": 41.26,
+    "total": 70332.82,
+    "validate": 0.14
+   },
+   "injection_flags": {
+    "total": 3,
+    "passages_dropped": 1,
+    "questions_flagged": 2,
+    "by_pattern": {
+     "ignore-instructions": 2,
+     "role-change": 1
+    },
+    "documents": [
+     "b09-exam-rescheduling-guidelines-md"
+    ]
+   },
+   "collections": {
+    "rahbar-mxbai / mxbai-embed-large": 22
+   }
+  },
+  "live": {
+   "traces": 12,
+   "asks": 10,
+   "retrieves": 2,
+   "top1_similarity": {
+    "n": 9,
+    "min": 0.6795,
+    "p25": 0.7731,
+    "p50": 0.8061,
+    "p75": 0.8207,
+    "max": 0.8652,
+    "histogram": {
+     "0.00-0.50": 0,
+     "0.50-0.55": 0,
+     "0.55-0.60": 0,
+     "0.60-0.65": 0,
+     "0.65-0.70": 1,
+     "0.70-0.75": 1,
+     "0.75-0.80": 2,
+     "0.80-0.85": 4,
+     "0.85-0.90": 1,
+     "0.90-1.00": 0
+    }
+   },
+   "abstention_rate": 0.1,
+   "outcomes": {
+    "answered": 6,
+    "model": 1,
+    "cache": 3
+   },
+   "cache_hit_rate": 0.3,
+   "cache": {
+    "hit": 3,
+    "miss": 7,
+    "skip": 0
+   },
+   "latency_p95_ms": {
+    "cache": 9.28,
+    "embed": 1417.23,
+    "generate": 73812.27,
+    "guardrail": 2.13,
+    "retrieve": 105.82,
+    "total": 73947.58,
+    "validate": 0.2
+   },
+   "injection_flags": {
+    "total": 1,
+    "passages_dropped": 1,
+    "questions_flagged": 0,
+    "by_pattern": {
+     "ignore-instructions": 1
+    },
+    "documents": [
+     "b09-exam-rescheduling-guidelines-md"
+    ]
+   },
+   "collections": {
+    "rahbar / nomic-embed-text": 11,
+    "rahbar-mxbai / mxbai-embed-large": 1
+   }
+  }
+ }
+}

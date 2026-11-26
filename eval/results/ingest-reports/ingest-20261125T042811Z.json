@@ -1,0 +1,21 @@
+{
+ "run": "20261125T042811Z",
+ "collection": "rahbar",
+ "embed_model": "nomic-embed-text",
+ "documents_seen": 14,
+ "indexed_active": 12,
+ "archived": 2,
+ "quarantined": 0,
+ "deleted_documents": [],
+ "rebuilt": false,
+ "chunks_wanted": 719,
+ "embedded": 0,
+ "skipped_unchanged": 719,
+ "metadata_updated": 0,
+ "deleted": 0,
+ "kept": 0,
+ "embedded_by_doc": {},
+ "deleted_by_doc": {},
+ "index_version": "20261125T042747Z",
+ "total": 719
+}

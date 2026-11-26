@@ -1,0 +1,26 @@
+{
+ "run": "20261125T043158Z",
+ "collection": "rahbar",
+ "embed_model": "nomic-embed-text",
+ "documents_seen": 14,
+ "indexed_active": 12,
+ "archived": 2,
+ "quarantined": 0,
+ "deleted_documents": [],
+ "rebuilt": false,
+ "chunks_wanted": 719,
+ "embedded": 8,
+ "skipped_unchanged": 711,
+ "metadata_updated": 0,
+ "deleted": 2,
+ "kept": 0,
+ "embedded_by_doc": {
+  "b03-laboratory-safety-policy-md": 6,
+  "b10-student-clubs-and-societies-policy-md": 2
+ },
+ "deleted_by_doc": {
+  "b10-student-clubs-and-societies-policy-md": 2
+ },
+ "index_version": "20261125T043211Z",
+ "total": 719
+}

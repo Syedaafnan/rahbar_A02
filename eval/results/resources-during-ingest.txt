@@ -1,0 +1,36 @@
+$ kubectl top pods -n rahbar --containers   (13:23:44Z, ingestion Job running)
+POD                              NAME     CPU(cores)   MEMORY(bytes)   
+api-574449655b-7wmqz             api      4m           74Mi            
+api-574449655b-9cdkn             api      4m           72Mi            
+api-574449655b-mz977             api      4m           71Mi            
+api-candidate-598dfcf9ff-jchnn   api      4m           73Mi            
+chroma-0                         chroma   2m           195Mi           
+redis-5766dbfb48-sm8kp           redis    15m          9Mi             
+ui-5996dbdc64-475kf              ui       1m           4Mi             
+$ kubectl top pods -n rahbar --containers   (13:23:50Z, ingestion Job running)
+POD                              NAME     CPU(cores)   MEMORY(bytes)   
+api-574449655b-7wmqz             api      4m           74Mi            
+api-574449655b-9cdkn             api      4m           72Mi            
+api-574449655b-mz977             api      4m           71Mi            
+api-candidate-598dfcf9ff-jchnn   api      4m           73Mi            
+chroma-0                         chroma   2m           195Mi           
+redis-5766dbfb48-sm8kp           redis    15m          9Mi             
+ui-5996dbdc64-475kf              ui       1m           4Mi             
+$ kubectl top pods -n rahbar --containers   (13:23:56Z, ingestion Job running)
+POD                              NAME     CPU(cores)   MEMORY(bytes)   
+api-574449655b-7wmqz             api      4m           74Mi            
+api-574449655b-9cdkn             api      4m           72Mi            
+api-574449655b-mz977             api      4m           71Mi            
+api-candidate-598dfcf9ff-jchnn   api      4m           73Mi            
+chroma-0                         chroma   2m           195Mi           
+redis-5766dbfb48-sm8kp           redis    15m          9Mi             
+ui-5996dbdc64-475kf              ui       1m           4Mi             
+$ kubectl top pods -n rahbar --containers   (13:24:03Z, ingestion Job running)
+POD                              NAME     CPU(cores)   MEMORY(bytes)   
+api-574449655b-7wmqz             api      4m           74Mi            
+api-574449655b-9cdkn             api      4m           72Mi            
+api-574449655b-mz977             api      4m           71Mi            
+api-candidate-598dfcf9ff-jchnn   api      4m           73Mi            
+chroma-0                         chroma   2m           195Mi           
+redis-5766dbfb48-sm8kp           redis    15m          9Mi             
+ui-5996dbdc64-475kf              ui       1m           4Mi             

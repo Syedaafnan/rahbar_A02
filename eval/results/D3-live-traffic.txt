@@ -1,0 +1,10 @@
+544d6797477b482e9ed56aad3e0d24d8  cache=miss   48.8s  answered=True   Can any exam be rescheduled at any time without documents, a
+c869c2c965924598bdc27a83f341d288  cache=miss   74.0s  answered=True   what gpa do i need so i dont get warning
+218cb15225f141f1a0df16c7d8e7317d  cache=miss   69.5s  answered=True   my cgpa is 1.9 will i be kicked out of uni
+53bc2f08a9ff4adbbb3e2a05f9e007c3  cache=miss   40.4s  answered=True   how many semesters on probation before admission is closed
+93a1fe5fde3f41a7a198e227847243c6  cache=miss   46.8s  answered=True   last date to withdraw a course this semester?
+98c0944e40e0471d835e1eecbd60d36a  cache=miss   52.2s  answered=False  do i need my parents signature to drop a course
+68d5f61db0c64aeaaa3071450ba47e19  cache=miss   51.1s  answered=True   is the fee refunded if I withdraw from a course
+e5362f9f68b54252a20a6c5695ca31ae  cache=hit     0.1s  answered=True   what gpa do i need so i dont get warning
+2d4af2dc5e1442c189807a0666f5e7cd  cache=hit     0.2s  answered=True   my cgpa is 1.9 will i be kicked out of uni
+4da3ec1eeecc420ba71dc3326b626938  cache=hit     0.1s  answered=True   how many semesters on probation before admission is closed

@@ -1,0 +1,25 @@
+{
+ "run": "20261125T042946Z",
+ "collection": "rahbar",
+ "embed_model": "nomic-embed-text",
+ "documents_seen": 13,
+ "indexed_active": 11,
+ "archived": 2,
+ "quarantined": 0,
+ "deleted_documents": [
+  "b03-laboratory-safety-policy-md"
+ ],
+ "rebuilt": false,
+ "chunks_wanted": 713,
+ "embedded": 0,
+ "skipped_unchanged": 713,
+ "metadata_updated": 0,
+ "deleted": 6,
+ "kept": 0,
+ "embedded_by_doc": {},
+ "deleted_by_doc": {
+  "b03-laboratory-safety-policy-md": 6
+ },
+ "index_version": "20261125T042955Z",
+ "total": 713
+}

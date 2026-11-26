@@ -1,0 +1,24 @@
+Near-duplicate calibration (A1 uniqueness check), from verify-20261125T042629Z.json
+model nomic-embed-text, threshold 0.96, document vector = mean of 6 windows of 250 words
+
+document                                           closest other document (different family)         cosine  verdict
+academic-rules-handbook-jun-2026.pdf               -                                                 0.0000  distinct
+annual-report-2019-20.pdf                          academic-rules-handbook-jun-2026-pdf              0.8609  distinct
+annual-report-2023-24.pdf                          annual-report-2019-20-pdf                         0.9314  distinct
+faculty-entrepreneurship-and-technical-start-ups-p academic-rules-handbook-jun-2026-pdf              0.8197  distinct
+fee-structure-page.html                            academic-rules-handbook-jun-2026-pdf              0.8056  distinct
+grading-page.html                                  academic-rules-handbook-jun-2026-pdf              0.8568  distinct
+prospectus-2026-academic-rules-and-regulations.pdf academic-rules-handbook-jun-2026-pdf              0.9118  distinct
+student-handbook-jun-2026.pdf                      academic-rules-handbook-jun-2026-pdf              0.9544  distinct
+undergraduate-academic-rules-aug-2023.pdf          prospectus-2026-academic-rules-and-regulations-p  0.9557  distinct
+b01-library-borrowing-rules.md                     prospectus-2026-academic-rules-and-regulations-p  0.8105  distinct
+b03-laboratory-safety-policy.md                    academic-rules-handbook-jun-2026-pdf              0.7602  distinct
+b05-library-borrowing-rules-revised.md             b01-library-borrowing-rules-md                    0.9954  NEAR-DUP
+b07-scholarship-notice.md                          academic-rules-handbook-jun-2026-pdf              0.8249  distinct
+b08-fee-structure-2027-28.html                     prospectus-2026-academic-rules-and-regulations-p  0.8154  distinct
+b09-exam-rescheduling-guidelines.md                academic-rules-handbook-jun-2026-pdf              0.8200  distinct
+b10-student-clubs-and-societies-policy.md          prospectus-2026-academic-rules-and-regulations-p  0.8294  distinct
+
+highest similarity between two DISTINCT documents kept: 0.9557
+planted near-duplicate (b05 reworded b01): 0.995 -> quarantined
+threshold 0.96 sits between them.
