@@ -75,11 +75,26 @@ jobs:
       - name: smoke test through the Ingress
         run: |
           set -e
-          curl -sf -H "Host: rahbar.local" http://localhost/ | grep -qi "<html"
-          body=$(curl -sf -H "Host: rahbar.local" -H "Content-Type: application/json" \
-                 -H "X-Request-ID: smoke-${{ github.sha }}" \
-                 -d '{"question":"What is the minimum attendance needed to sit the final exam?"}' \
-                 http://localhost/api/ask)
+          # Right after `kubectl rollout status` the pods are ready but the ingress
+          # controller may not route rahbar.local yet (404/503). Retry instead of failing
+          # on the first request (a run failed this way with curl exit code 22).
+          for i in $(seq 1 12); do
+            if curl -sf -H "Host: rahbar.local" http://localhost/ | grep -qi "<html"; then
+              break
+            fi
+            [ "$i" -eq 12 ] && { echo "UI not reachable through the Ingress after 60 s"; exit 1; }
+            echo "ingress not routing yet (attempt $i), retrying in 5 s"; sleep 5
+          done
+          for i in $(seq 1 12); do
+            if body=$(curl -sf -H "Host: rahbar.local" -H "Content-Type: application/json" \
+                   -H "X-Request-ID: smoke-${{ github.sha }}" \
+                   -d '{"question":"What is the minimum attendance needed to sit the final exam?"}' \
+                   http://localhost/api/ask); then
+              break
+            fi
+            [ "$i" -eq 12 ] && { echo "/api/ask not reachable through the Ingress after 60 s"; exit 1; }
+            echo "/api/ask not answering yet (attempt $i), retrying in 5 s"; sleep 5
+          done
           echo "$body"
           echo "$body" | python3 -c 'import json,sys; r=json.load(sys.stdin); assert r["request_id"].startswith("smoke-"); assert r["retrieved"], "nothing retrieved"; print("smoke test passed")'
           echo "running image: $(kubectl -n rahbar get deploy api -o jsonpath='{.spec.template.spec.containers[0].image}')"
