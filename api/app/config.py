@@ -52,6 +52,13 @@ class Settings:
 
     log_level: str = "INFO"
 
+    # --- A03 (RAGOps) -------------------------------------------------------------
+    # Query-side task prefix of the embedding model (nomic: "search_query: ").
+    embed_query_prefix: str = "search_query: "
+    trace_dir: str = ""              # TRACE_DIR: also append traces to a file here (PVC)
+    llm_seed: int = 42               # LLM_SEED: fixed seed for reproducible answers
+    release: str = "live"            # RELEASE: live | candidate, written into every trace
+
 
 def get_settings() -> Settings:
     return Settings(
@@ -76,4 +83,8 @@ def get_settings() -> Settings:
         hosted_base_url=os.environ.get("HOSTED_BASE_URL", ""),
         llm_api_key=os.environ.get("LLM_API_KEY", ""),
         log_level=os.environ.get("LOG_LEVEL", "INFO"),
+        embed_query_prefix=os.environ.get("EMBED_QUERY_PREFIX", "search_query: "),
+        trace_dir=os.environ.get("TRACE_DIR", ""),
+        llm_seed=_int("LLM_SEED", 42),
+        release=os.environ.get("RELEASE", "live"),
     )

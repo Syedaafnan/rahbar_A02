@@ -15,7 +15,7 @@ from typing import Any
 import httpx
 
 from ..config import Settings
-from ..embedding import embed_query
+from ..embedding import embed_query, embedding_version
 from ..schemas import Passage
 
 INDEX_INFO_TTL = 15.0   # seconds; readiness and the cache key do not need fresher data
@@ -51,7 +51,7 @@ class ChromaRetriever:
     def retrieve(self, question: str, k: int, include_superseded: bool = False,
                  vector: list[float] | None = None) -> list[Passage]:
         vector = vector or embed_query(question, self.settings, self.http)
-        where = None if include_superseded else {"superseded": False}
+        where = self.where(include_superseded)
         result = self._collection().query(query_embeddings=[vector], n_results=k, where=where,
                                           include=["documents", "metadatas", "distances"])
         passages = []
@@ -63,8 +63,16 @@ class ChromaRetriever:
                 score=round(1.0 - float(distance), 4),
                 doc_version=str(meta.get("doc_version", "")),
                 superseded=bool(meta.get("superseded", False)),
+                doc_id=str(meta.get("doc_id", "")),
             ))
         return passages
+
+    def where(self, include_superseded: bool) -> dict[str, Any] | None:
+        # Archived versions carry superseded=true (indexer/pipeline/verify.py, recency).
+        return None if include_superseded else {"superseded": False}
+
+    def embedding_version(self) -> str:
+        return embedding_version(self.settings, self.http)
 
     def index_info(self) -> dict[str, Any]:
         now = time.monotonic()

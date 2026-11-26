@@ -6,11 +6,20 @@ real model. It is deterministic: the same input always gives the same output.
 
 from __future__ import annotations
 
+from typing import Any
+
 from ...schemas import Answer, Citation, Passage
+from .prompt import build_messages
 
 
 class StubProvider:
     name = "stub"
+
+    def prompt(self, question: str, passages: list[Passage]) -> list[dict[str, str]]:
+        return build_messages(question, passages, include_schema=False)
+
+    def params(self) -> dict[str, Any]:
+        return {"provider": "stub", "model": "stub", "temperature": 0.0}
 
     def generate(self, question: str, passages: list[Passage]) -> Answer:
         if not passages:

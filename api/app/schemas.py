@@ -15,6 +15,18 @@ from pydantic import BaseModel, Field
 
 class AskRequest(BaseModel):
     question: str = Field(min_length=3, max_length=500)
+    # A03: the evaluation suite asks with no_cache=true (every question must really run
+    # the pipeline) and debug=true (the response then carries the context and stage
+    # timings, which the faithfulness judge and the latency report need).
+    no_cache: bool = False
+    debug: bool = False
+
+
+class RetrieveRequest(BaseModel):
+    """POST /api/retrieve: retrieval only, no LLM (component-level tests, A03 B)."""
+
+    question: str = Field(min_length=3, max_length=500)
+    k: int | None = Field(default=None, ge=1, le=50)
 
 
 class Passage(BaseModel):
@@ -29,6 +41,7 @@ class Passage(BaseModel):
     # Internal only (never in AskResponse): lets the prompt label old versions.
     doc_version: str = ""
     superseded: bool = False
+    doc_id: str = ""          # A03: for the trace (which document version produced this)
 
 
 class Citation(BaseModel):
@@ -57,6 +70,16 @@ class RetrievedRef(BaseModel):
     score: float
 
 
+class ContextPassage(BaseModel):
+    """A passage exactly as it was put into the prompt (debug responses only)."""
+
+    chunk_id: str
+    source: str
+    section: str
+    page: int | None = None
+    text: str
+
+
 class AskResponse(BaseModel):
     request_id: str
     answer: str
@@ -65,3 +88,16 @@ class AskResponse(BaseModel):
     confidence: Literal["high", "medium", "low"]
     retrieved: list[RetrievedRef]
     provider: str
+    # A03: the trace id (same as request_id) points at the trace record of this answer.
+    trace_id: str = ""
+    reason: str = ""                                   # answered | floor | model | ...
+    context: list[ContextPassage] | None = None        # debug only
+    timings_ms: dict[str, float] | None = None         # debug only
+
+
+class RetrieveResponse(BaseModel):
+    trace_id: str
+    collection: str
+    embed_model: str
+    retrieved: list[RetrievedRef]
+    timings_ms: dict[str, float]

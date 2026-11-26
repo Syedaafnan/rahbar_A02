@@ -53,3 +53,9 @@ class StubRetriever:
 
     def index_info(self) -> dict[str, Any]:
         return {"count": len(_PASSAGES), "metadata": {"embed_model": "stub", "index_version": "stub"}}
+
+    def where(self, include_superseded: bool) -> dict[str, Any] | None:
+        return None if include_superseded else {"superseded": False}
+
+    def embedding_version(self) -> str:
+        return "stub@none"
