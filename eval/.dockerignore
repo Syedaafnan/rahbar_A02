@@ -1,0 +1,6 @@
+results/
+experiments/
+fixtures/
+tests/
+__pycache__/
+*.pyc

@@ -1,0 +1,30 @@
+{"id": "p01", "kind": "paraphrase", "a": "What CGPA keeps a student off academic warning?", "b": "Which cumulative GPA do I need so that I am not placed on probation?"}
+{"id": "p02", "kind": "paraphrase", "a": "When is the last day to withdraw from a course?", "b": "Until what date can I drop a subject?"}
+{"id": "p03", "kind": "paraphrase", "a": "How much is the tuition fee per credit hour?", "b": "What does one credit hour cost in fees?"}
+{"id": "p04", "kind": "paraphrase", "a": "What percentage of lectures must a student attend?", "b": "How many classes am I required to be present in?"}
+{"id": "p05", "kind": "paraphrase", "a": "How many courses can be repeated in the summer semester?", "b": "What is the limit on repeat courses during summer?"}
+{"id": "p06", "kind": "paraphrase", "a": "What fee is charged for rechecking an exam paper?", "b": "How much do I pay to get my paper re-evaluated?"}
+{"id": "p07", "kind": "paraphrase", "a": "Which uses of generative AI are not allowed for students?", "b": "What kinds of ChatGPT use count as academic misconduct?"}
+{"id": "p08", "kind": "paraphrase", "a": "Can I register for a course without passing its prerequisite?", "b": "Is it allowed to enrol in a class if I failed the required earlier course?"}
+{"id": "p09", "kind": "paraphrase", "a": "How much of the fee is refunded in the first ten days?", "b": "If I leave in the first week and a half, what share of my fee comes back?"}
+{"id": "p10", "kind": "paraphrase", "a": "What SGPA is needed for the Rector's list of honours?", "b": "What semester GPA puts my name on the honours list?"}
+{"id": "p11", "kind": "paraphrase", "a": "When is a student's admission closed for poor performance?", "b": "After how many bad semesters is a student dismissed from the university?"}
+{"id": "p12", "kind": "paraphrase", "a": "How is the final grade divided between sessionals and the final exam?", "b": "What weight does the final exam carry compared with coursework?"}
+{"id": "p13", "kind": "paraphrase", "a": "Who must approve a course withdrawal application?", "b": "Whose signature is required on the form to drop a course?"}
+{"id": "p14", "kind": "paraphrase", "a": "How long is the summer semester?", "b": "How many weeks does the summer term last?"}
+{"id": "p15", "kind": "paraphrase", "a": "What is the campus transfer fee?", "b": "How much does it cost to move to another campus of the university?"}
+{"id": "u01", "kind": "unrelated", "a": "What CGPA keeps a student off academic warning?", "b": "How do I bake sourdough bread at home?"}
+{"id": "u02", "kind": "unrelated", "a": "When is the last day to withdraw from a course?", "b": "Which planet has the most moons?"}
+{"id": "u03", "kind": "unrelated", "a": "How much is the tuition fee per credit hour?", "b": "What is the offside rule in football?"}
+{"id": "u04", "kind": "unrelated", "a": "What percentage of lectures must a student attend?", "b": "How do I change the oil in a car engine?"}
+{"id": "u05", "kind": "unrelated", "a": "How many courses can be repeated in the summer semester?", "b": "What is the capital city of Australia?"}
+{"id": "u06", "kind": "unrelated", "a": "What fee is charged for rechecking an exam paper?", "b": "Which wild animals live in the Himalayas?"}
+{"id": "u07", "kind": "unrelated", "a": "Which uses of generative AI are not allowed for students?", "b": "How long should rice be boiled?"}
+{"id": "u08", "kind": "unrelated", "a": "Can I register for a course without passing its prerequisite?", "b": "What causes the northern lights?"}
+{"id": "u09", "kind": "unrelated", "a": "How much of the fee is refunded in the first ten days?", "b": "Who painted the Mona Lisa?"}
+{"id": "u10", "kind": "unrelated", "a": "What SGPA is needed for the Rector's list of honours?", "b": "How do bees make honey?"}
+{"id": "u11", "kind": "unrelated", "a": "When is a student's admission closed for poor performance?", "b": "What is the best way to grow tomatoes on a balcony?"}
+{"id": "u12", "kind": "unrelated", "a": "How is the final grade divided between sessionals and the final exam?", "b": "How far is the Moon from the Earth?"}
+{"id": "u13", "kind": "unrelated", "a": "Who must approve a course withdrawal application?", "b": "What is the recipe for chicken karahi?"}
+{"id": "u14", "kind": "unrelated", "a": "How long is the summer semester?", "b": "How do I tune a guitar by ear?"}
+{"id": "u15", "kind": "unrelated", "a": "What is the campus transfer fee?", "b": "Why is the sky blue?"}
