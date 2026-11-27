@@ -33,7 +33,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-import yaml
+import yaml  # type: ignore[import-untyped]
 
 from .models import Document, slug
 
@@ -228,7 +228,7 @@ def to_document(cand: Candidate) -> Document:
         source_uri=str(meta.get("source") or meta.get("url") or ""),
         family=str(meta.get("family") or ""),
         date=str(meta.get("date") or ""),
-        declared_pages=int(pages) if str(pages or "").isdigit() else None,
+        declared_pages=int(str(pages)) if str(pages or "").isdigit() else None,
         sha256=sha256_file(cand.path),
         path=str(cand.path),
         batch=cand.batch,

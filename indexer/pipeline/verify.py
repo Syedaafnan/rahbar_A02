@@ -180,14 +180,14 @@ def check_uniqueness(v: Verdict, kept: list[Verdict], vectors: dict[str, list[fl
                 score = cosine(mine, theirs)
                 if score > best[0]:
                     best = (score, other)
-    score, other = best
-    if other is not None and score >= threshold:
-        v.fail("uniqueness", f"near-duplicate of {other.doc.source} ({other.doc.batch}): "
-               f"similarity {score:.3f} >= {threshold}", duplicate_of=other.doc.doc_id,
+    score, closest = best
+    if closest is not None and score >= threshold:
+        v.fail("uniqueness", f"near-duplicate of {closest.doc.source} ({closest.doc.batch}): "
+               f"similarity {score:.3f} >= {threshold}", duplicate_of=closest.doc.doc_id,
                similarity=round(score, 4))
         return
-    v.ok("uniqueness", "no duplicate" + (f" (closest {other.doc.doc_id} at {score:.3f})"
-                                          if other is not None else ""),
+    v.ok("uniqueness", "no duplicate" + (f" (closest {closest.doc.doc_id} at {score:.3f})"
+                                          if closest is not None else ""),
          closest_similarity=round(score, 4))
 
 
