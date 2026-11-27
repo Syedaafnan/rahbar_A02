@@ -1,21 +1,19 @@
 # syntax=docker/dockerfile:1.7
-# RAHBAR ui: static chat page served by unprivileged nginx on 8080.
+# RAHBAR ui: static chat page served by nginx on 8080, as a non-root user.
 # Build context: ui/        docker build -t rahbar-ui:<sha> ui
 #
 # The pod runs with readOnlyRootFilesystem: true; nginx.conf writes only under /tmp,
 # so the Deployment mounts an emptyDir there.
-# 1.30.6 on Alpine 3.24: the old 1.27.5 image (Alpine 3.21.3) had 65 HIGH/CRITICAL
-# findings with fixes available in its system libraries (Trivy, CI scan job).
-FROM nginxinc/nginx-unprivileged:1.30.6-alpine3.24
-# Alpine publishes security fixes before the nginx image is rebuilt: pull them in at
-# build time (brotli, curl, libexpat, musl, zlib were still flagged). Root is used for
-# this one step only; the image runs as uid 101 below.
-USER root
-RUN apk upgrade --no-cache
+# Alpine's own nginx package instead of nginxinc/nginx-unprivileged: the newest
+# nginx-unprivileged 1.30 image still ships nginx 1.30.6, which Trivy flags with 4
+# CRITICAL and 2 HIGH CVEs (CVE-2026-113425 and others) fixed in Alpine's 1.30.7-r0.
+FROM alpine:3.24
+RUN apk upgrade --no-cache \
+ && apk add --no-cache nginx \
+ && mkdir -p /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY index.html /usr/share/nginx/html/index.html
-# nginx-unprivileged already runs as uid 101; state it so the checker and the
-# reader do not have to know that.
+# The pod sets runAsUser 101 / runAsGroup 101; state it here too.
 USER 101
 EXPOSE 8080
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-e", "/dev/stderr", "-g", "daemon off;"]

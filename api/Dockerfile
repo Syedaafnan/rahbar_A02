@@ -14,6 +14,9 @@ FROM python:3.12-slim-bookworm
 ENV PATH=/opt/venv/bin:$PATH \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
+# Debian publishes security fixes before the python image is rebuilt (Trivy flagged
+# libpam, CVE-2025-6020): install them at build time.
+RUN apt-get update && apt-get upgrade -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
 # A fixed numeric uid so the pod's runAsUser / runAsNonRoot checks can verify it.
 RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin rahbar
 COPY --from=build /opt/venv /opt/venv

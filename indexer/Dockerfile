@@ -22,7 +22,10 @@ RUN /opt/venv/bin/pip install -r /tmp/requirements.txt
 FROM python:3.12-slim-bookworm
 # OCR needs system binaries, not only the pip wrappers: tesseract for the text,
 # poppler-utils (pdftoppm, pdffonts) to rasterise scanned pages.
+# The upgrade pulls in Debian security fixes released after the python image (libpam,
+# CVE-2025-6020, flagged by the CI Trivy scan).
 RUN apt-get update \
+ && apt-get upgrade -y --no-install-recommends \
  && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-eng poppler-utils \
  && rm -rf /var/lib/apt/lists/*
 ENV PATH=/opt/venv/bin:$PATH \
