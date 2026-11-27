@@ -1,0 +1,47 @@
+$ python scripts/release.py promote good
+release gate for the good candidate: job/eval-candidate is passed
+$ kubectl -n rahbar patch deployment api --type json -p [{"op": "replace", "path": "/spec/template/spec/containers/0/envFrom/0/configMapRef/name", "value": "rahbar-config-candidate"}]
+deployment.apps/api patched
+$ kubectl -n rahbar annotate deployment api --overwrite kubernetes.io/change-cause=release good candidate: rahbar-config -> rahbar-config-candidate
+deployment.apps/api annotated
+$ kubectl -n rahbar rollout status deployment/api --timeout=600s
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+$ kubectl -n rahbar rollout history deployment/api
+deployment.apps/api 
+REVISION  CHANGE-CAUSE
+1         <none>
+2         release good candidate: rahbar-config -> rahbar-config-candidate
+exit code: 0
+
+$ python scripts/release.py ask "What CGPA puts a student on academic warning?"
+trace_id: 773760d4ba004475ab02ce2be457e96d
+
+$ kubectl -n rahbar logs -l app.kubernetes.io/name=api | grep 773760d4ba004475ab02ce2be457e96d
+[pod/api-659d47759b-dcbwl/api]
+{
+ "trace_id": "773760d4ba004475ab02ce2be457e96d",
+ "timestamp": "2026-11-26T13:14:11.646Z",
+ "release": "live",
+ "pod": "api-659d47759b-dcbwl",
+ "embedding": {
+  "model": "mxbai-embed-large",
+  "version": "mxbai-embed-large:latest@468836162de7",
+  "query_prefix": "Represent this sentence for searching relevant passages: "
+ },
+ "collection": {
+  "name": "rahbar-mxbai",
+  "index_version": "20261126T063425Z",
+  "built_with_model": "mxbai-embed-large",
+  "chunk_size": 400,
+  "chunk_overlap": 50
+ }
+}

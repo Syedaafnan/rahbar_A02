@@ -20,8 +20,13 @@ from app.schemas import Answer, Citation, Passage
 from app.services import readiness
 from app.services.answer import answer_question
 from app.services.cache import RedisCache
-from app.services.grounding import (ABSTAIN_TEXT, FALLBACK_TEXT, is_follow_up,
-                                    valid_citations, wants_old_version)
+from app.services.grounding import (
+    ABSTAIN_TEXT,
+    FALLBACK_TEXT,
+    is_follow_up,
+    valid_citations,
+    wants_old_version,
+)
 
 SETTINGS = Settings(retriever="chroma", embed_model="nomic-embed-text", top_k=3,
                     relevance_floor=0.55, cache_threshold=0.95)
@@ -57,6 +62,12 @@ class FakeRetriever:
     def index_info(self) -> dict[str, Any]:
         return {"count": self.count, "metadata": self.metadata}
 
+    def where(self, include_superseded: bool) -> dict[str, Any] | None:
+        return None if include_superseded else {"superseded": False}
+
+    def embedding_version(self) -> str:
+        return "nomic-embed-text@test"
+
 
 class FakeProvider:
     """Returns the queued replies in order; an Exception in the queue is raised."""
@@ -66,6 +77,12 @@ class FakeProvider:
     def __init__(self, *replies: Any) -> None:
         self.replies = list(replies)
         self.calls = 0
+
+    def prompt(self, question: str, passages: list[Passage]) -> list[dict[str, str]]:
+        return build_messages(question, passages, include_schema=False)
+
+    def params(self) -> dict[str, Any]:
+        return {"provider": "fake", "model": "fake", "temperature": 0.0}
 
     def generate(self, question: str, passages: list[Passage]) -> Answer:
         self.calls += 1

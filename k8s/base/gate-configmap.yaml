@@ -1,0 +1,24 @@
+# Release gate and coverage thresholds (A03 C2, E2, F2). Mounted at /config/gate.yaml
+# by the eval, gate and coverage Jobs. Same content as eval/gate.yaml (the reasons for
+# each value are written there).
+#
+# Demo (F2): change a threshold and re-run the gate on the SAME result files, no rebuild:
+#   kubectl -n rahbar edit configmap rahbar-gate        # e.g. faithfulness_min: 0.99
+#   kubectl -n rahbar delete job gate --ignore-not-found
+#   kubectl apply -f k8s/gate-job.yaml && kubectl -n rahbar logs -f job/gate
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rahbar-gate
+  labels: { app.kubernetes.io/part-of: rahbar }
+data:
+  gate.yaml: |
+    gate:
+      recall_at_5_max_drop: 0.02
+      faithfulness_min: 0.80
+      citation_validity_min: 0.95
+      abstention_not_below_baseline: true
+      p95_latency_ms_max: 180000
+    coverage:
+      similarity_threshold: 0.68
+      min_share: 0.85

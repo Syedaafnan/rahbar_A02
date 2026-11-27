@@ -17,6 +17,16 @@ class IndexerSettings:
     chunk_overlap: int
     ollama_url: str
     chunk_strategy: str = "structure"   # CHUNK_STRATEGY: structure | fixed (baseline only)
+    # --- A03 (RAGOps) -------------------------------------------------------------
+    # Task prefixes differ per embedding model (nomic wants "search_document: ";
+    # mxbai-embed-large wants none for passages). They travel with EMBED_MODEL in the
+    # ConfigMap, so a candidate model brings its own.
+    embed_doc_prefix: str = "search_document: "
+    data_dir: str = ""                  # DATA_DIR: the data lake PVC; "" = no lake (tests)
+    near_dup_threshold: float = 0.96    # NEAR_DUP_THRESHOLD: whole-document cosine (calibrated)
+    # LAKE_READ_ONLY=true: verify and index, but never move files in the lake. The
+    # candidate indexer Jobs share the live data lake and must not rearrange it.
+    lake_read_only: bool = False
 
 
 def get_settings() -> IndexerSettings:
@@ -30,4 +40,8 @@ def get_settings() -> IndexerSettings:
         chunk_overlap=int(os.environ.get("CHUNK_OVERLAP", 50)),
         ollama_url=os.environ.get("OLLAMA_URL", "http://host.minikube.internal:11434"),
         chunk_strategy=os.environ.get("CHUNK_STRATEGY", "structure"),
+        embed_doc_prefix=os.environ.get("EMBED_DOC_PREFIX", "search_document: "),
+        data_dir=os.environ.get("DATA_DIR", ""),
+        near_dup_threshold=float(os.environ.get("NEAR_DUP_THRESHOLD", 0.96)),
+        lake_read_only=os.environ.get("LAKE_READ_ONLY", "false").lower() == "true",
     )

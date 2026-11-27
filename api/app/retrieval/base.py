@@ -24,3 +24,11 @@ class Retriever(Protocol):
     def index_info(self) -> dict[str, Any]:
         """{"count": int, "metadata": dict} of the collection. Raises if unreachable."""
         ...
+
+    def where(self, include_superseded: bool) -> dict[str, Any] | None:
+        """The metadata filter retrieve() applies (A03: recorded in every trace)."""
+        ...
+
+    def embedding_version(self) -> str:
+        """'<model>@<digest>' of the query embedding model (A03 trace)."""
+        ...

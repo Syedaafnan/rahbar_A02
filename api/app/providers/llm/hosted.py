@@ -7,6 +7,8 @@ JSON mode forces a JSON object; the schema is in the system prompt; Pydantic val
 
 from __future__ import annotations
 
+from typing import Any
+
 import httpx
 
 from ...config import Settings
@@ -25,12 +27,21 @@ class HostedProvider:
         self.http = httpx.Client(timeout=settings.llm_timeout_seconds,
                                  headers={"Authorization": f"Bearer {settings.llm_api_key}"})
 
+    def prompt(self, question: str, passages: list[Passage]) -> list[dict[str, str]]:
+        return build_messages(question, passages)          # schema in the prompt
+
+    def params(self) -> dict[str, Any]:
+        return {"provider": "hosted", "base_url": self.settings.hosted_base_url,
+                "model": self.settings.llm_model, "temperature": self.settings.temperature,
+                "seed": self.settings.llm_seed, "response_format": "json_object"}
+
     def generate(self, question: str, passages: list[Passage]) -> Answer:
         response = self.http.post(f"{self.settings.hosted_base_url.rstrip('/')}/chat/completions",
                                   json={
                                       "model": self.settings.llm_model,
-                                      "messages": build_messages(question, passages),
+                                      "messages": self.prompt(question, passages),
                                       "temperature": self.settings.temperature,
+                                      "seed": self.settings.llm_seed,
                                       "response_format": {"type": "json_object"},
                                   })
         response.raise_for_status()

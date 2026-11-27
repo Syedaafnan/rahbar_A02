@@ -1,0 +1,49 @@
+{
+ "candidate": "/results/latest-candidate.json",
+ "baseline": "/results/baseline.json",
+ "thresholds": {
+  "recall_at_5_max_drop": 0.0,
+  "faithfulness_min": 0.99,
+  "citation_validity_min": 0.95,
+  "abstention_not_below_baseline": true,
+  "p95_latency_ms_max": 180000
+ },
+ "rules": [
+  {
+   "rule": "recall@5 drop vs baseline",
+   "value": -0.0172,
+   "limit": "<= 0.0",
+   "pass": true,
+   "detail": "candidate 0.7931 vs baseline 0.7759"
+  },
+  {
+   "rule": "e2e.faithfulness",
+   "value": 0.92,
+   "limit": ">= 0.99",
+   "pass": false,
+   "detail": ""
+  },
+  {
+   "rule": "e2e.citation_validity",
+   "value": 1.0,
+   "limit": ">= 0.95",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "rule": "e2e.latency_ms.p95",
+   "value": 72353.9,
+   "limit": "<= 180000",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "rule": "abstention vs baseline",
+   "value": 1.0,
+   "limit": ">= 1.0",
+   "pass": true,
+   "detail": ""
+  }
+ ],
+ "released": false
+}

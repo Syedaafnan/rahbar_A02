@@ -1,0 +1,18 @@
+# The candidate release (A03 C3/F3), applied AFTER the base:
+#   kubectl apply -k k8s/candidate
+# Then build each candidate's collection with its own indexer Job (the only writer):
+#   kubectl apply -f k8s/candidate/indexer-candidate-job.yaml
+#   kubectl apply -f k8s/candidate/indexer-bad-job.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: rahbar
+labels:
+  - pairs:
+      app.kubernetes.io/managed-by: kustomize
+resources:
+  - configmap-candidate.yaml
+  - configmap-bad.yaml
+  - api-candidate.yaml
+  - networkpolicy.yaml
+images:
+  - { name: rahbar-api, newTag: dev }

@@ -1,0 +1,47 @@
+$ kubectl -n rahbar rollout undo deployment/api   (via python scripts/release.py undo)
+live api currently reads rahbar-config-candidate
+$ kubectl -n rahbar rollout undo deployment/api
+deployment.apps/api rolled back
+$ kubectl -n rahbar rollout status deployment/api --timeout=600s
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "api" rollout to finish: 1 old replicas are pending termination...
+deployment "api" successfully rolled out
+live api now reads rahbar-config
+
+$ python scripts/release.py ask "What CGPA puts a student on academic warning?"
+trace_id: e673aab2896c425abef40a222c443711
+
+$ kubectl -n rahbar logs -l app.kubernetes.io/name=api | grep e673aab2896c425abef40a222c443711
+[pod/api-574449655b-7wmqz/api]
+{
+ "trace_id": "e673aab2896c425abef40a222c443711",
+ "timestamp": "2026-11-26T13:14:50.815Z",
+ "release": "live",
+ "pod": "api-574449655b-7wmqz",
+ "embedding": {
+  "model": "nomic-embed-text",
+  "version": "nomic-embed-text:latest@0a109f422b47",
+  "query_prefix": "search_query: "
+ },
+ "collection": {
+  "name": "rahbar",
+  "index_version": "20261125T043211Z",
+  "built_with_model": "nomic-embed-text",
+  "chunk_size": 400,
+  "chunk_overlap": 50
+ }
+}
+
+deployment.apps/api 
+REVISION  CHANGE-CAUSE
+2         release good candidate: rahbar-config -> rahbar-config-candidate
+3         <none>
+

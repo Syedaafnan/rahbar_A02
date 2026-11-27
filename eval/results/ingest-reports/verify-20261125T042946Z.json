@@ -1,0 +1,496 @@
+{
+ "run": "20261125T042946Z",
+ "collection": "rahbar",
+ "embed_model": "nomic-embed-text",
+ "near_dup_threshold": 0.96,
+ "documents": [
+  {
+   "doc_id": "academic-rules-handbook-jun-2026-pdf",
+   "source": "academic-rules-handbook-jun-2026.pdf",
+   "batch": "base",
+   "title": "Academic Rules Handbook (Jun 2026)",
+   "doc_version": "2026-06",
+   "family": "undergraduate-academic-rules",
+   "sha256": "4cfee3e191b84aeb9168f17656c7642212ff52b90f2780d028b33c154aa74b62",
+   "pages": 58,
+   "checks": {
+    "quality": {
+     "pass": true,
+     "reason": "readable text",
+     "letter_share": 0.947,
+     "common_word_share": 0.4,
+     "characters": 59342
+    },
+    "completeness": {
+     "pass": true,
+     "reason": "title, source, version/date and page count present; not truncated",
+     "pages": 58
+    },
+    "recency": {
+     "pass": true,
+     "reason": "newest version"
+    },
+    "uniqueness": {
+     "pass": true,
+     "reason": "no duplicate",
+     "closest_similarity": 0.0
+    }
+   },
+   "decision": "index",
+   "lake": null
+  },
+  {
+   "doc_id": "annual-report-2019-20-pdf",
+   "source": "annual-report-2019-20.pdf",
+   "batch": "base",
+   "title": "Annual Report 2019-20",
+   "doc_version": "2019-20",
+   "family": "annual-report-2019-20-pdf",
+   "sha256": "4d1961e340b13273bb039805ab5fd5e2c7bd0144a5bd5870f2ce4da13becd650",
+   "pages": 33,
+   "checks": {
+    "quality": {
+     "pass": true,
+     "reason": "readable text",
+     "letter_share": 0.913,
+     "common_word_share": 0.284,
+     "characters": 48814
+    },
+    "completeness": {
+     "pass": true,
+     "reason": "title, source, version/date and page count present; not truncated",
+     "pages": 33
+    },
+    "recency": {
+     "pass": true,
+     "reason": "only version"
+    },
+    "uniqueness": {
+     "pass": true,
+     "reason": "no duplicate (closest academic-rules-handbook-jun-2026-pdf at 0.861)",
+     "closest_similarity": 0.8609
+    }
+   },
+   "decision": "index",
+   "lake": null
+  },
+  {
+   "doc_id": "annual-report-2023-24-pdf",
+   "source": "annual-report-2023-24.pdf",
+   "batch": "base",
+   "title": "Annual Report 2023-24",
+   "doc_version": "2023-24",
+   "family": "annual-report-2023-24-pdf",
+   "sha256": "3c9d89e84af24df4b939f10e32c620a3877b276acea1db52f1aae4098e5c057a",
+   "pages": 85,
+   "checks": {
+    "quality": {
+     "pass": true,
+     "reason": "readable text",
+     "letter_share": 0.933,
+     "common_word_share": 0.303,
+     "characters": 195755
+    },
+    "completeness": {
+     "pass": true,
+     "reason": "title, source, version/date and page count present; not truncated",
+     "pages": 85
+    },
+    "recency": {
+     "pass": true,
+     "reason": "only version"
+    },
+    "uniqueness": {
+     "pass": true,
+     "reason": "no duplicate (closest annual-report-2019-20-pdf at 0.931)",
+     "closest_similarity": 0.9314
+    }
+   },
+   "decision": "index",
+   "lake": null
+  },
+  {
+   "doc_id": "faculty-entrepreneurship-and-technical-start-ups-policy-pdf",
+   "source": "faculty-entrepreneurship-and-technical-start-ups-policy.pdf",
+   "batch": "base",
+   "title": "Faculty Entrepreneurship and Technical Start-ups Policy",
+   "doc_version": "2022-05",
+   "family": "faculty-entrepreneurship-and-technical-start-ups-policy-pdf",
+   "sha256": "c2d5c7648d1593daf34d5c0596ede476e8984b0551830cc1690017e6e22f1359",
+   "pages": 8,
+   "checks": {
+    "quality": {
+     "pass": true,
+     "reason": "readable text",
+     "letter_share": 0.935,
+     "common_word_share": 0.374,
+     "characters": 11874
+    },
+    "completeness": {
+     "pass": true,
+     "reason": "title, source, version/date and page count present; not truncated",
+     "pages": 8
+    },
+    "recency": {
+     "pass": true,
+     "reason": "only version"
+    },
+    "uniqueness": {
+     "pass": true,
+     "reason": "no duplicate (closest academic-rules-handbook-jun-2026-pdf at 0.820)",
+     "closest_similarity": 0.8197
+    }
+   },
+   "decision": "index",
+   "lake": null
+  },
+  {
+   "doc_id": "fee-structure-page-html",
+   "source": "fee-structure-page.html",
+   "batch": "base",
+   "title": "Fee Structure page",
+   "doc_version": "2026-27",
+   "family": "fee-structure",
+   "sha256": "ec8872ae77cac7e96e20e6979933f36b00aaeb0ab3f668a2116e521c655e7b90",
+   "pages": 1,
+   "checks": {
+    "quality": {
+     "pass": true,
+     "reason": "readable text",
+     "letter_share": 0.897,
+     "common_word_share": 0.245,
+     "characters": 3593
+    },
+    "completeness": {
+     "pass": true,
+     "reason": "title, source, version/date and page count present; not truncated",
+     "pages": 1
+    },
+    "recency": {
+     "pass": false,
+     "reason": "newer version found: b08-fee-structure-2027-28.html (version 2027-28)",
+     "newer": "b08-fee-structure-2027-28-html"
+    },
+    "uniqueness": {
+     "pass": true,
+     "reason": "no duplicate (closest academic-rules-handbook-jun-2026-pdf at 0.806)",
+     "closest_similarity": 0.8056
+    }
+   },
+   "decision": "archive",
+   "lake": {
+    "pass": true,
+    "reason": "copied to /data/lake/archive/fee-structure-page-html/2026-27/fee-structure-page.html"
+   }
+  },
+  {
+   "doc_id": "grading-page-html",
+   "source": "grading-page.html",
+   "batch": "base",
+   "title": "Grading page",
+   "doc_version": "2026",
+   "family": "grading-page-html",
+   "sha256": "66a995b4d8474e914d37bfa14755a5361f47327d5a7314f9b7ec15d9b6176e6e",
+   "pages": 1,
+   "checks": {
+    "quality": {
+     "pass": true,
+     "reason": "readable text",
+     "letter_share": 0.915,
+     "common_word_share": 0.422,
+     "characters": 4665
+    },
+    "completeness": {
+     "pass": true,
+     "reason": "title, source, version/date and page count present; not truncated",
+     "pages": 1
+    },
+    "recency": {
+     "pass": true,
+     "reason": "only version"
+    },
+    "uniqueness": {
+     "pass": true,
+     "reason": "no duplicate (closest academic-rules-handbook-jun-2026-pdf at 0.857)",
+     "closest_similarity": 0.8568
+    }
+   },
+   "decision": "index",
+   "lake": null
+  },
+  {
+   "doc_id": "prospectus-2026-academic-rules-and-regulations-pdf",
+   "source": "prospectus-2026-academic-rules-and-regulations.pdf",
+   "batch": "base",
+   "title": "Prospectus 2026 - Academic Rules and Regulations",
+   "doc_version": "2026",
+   "family": "prospectus-2026-academic-rules-and-regulations-pdf",
+   "sha256": "a7e7f6896a59eb9413c9e8826e6c4c018ebe52045d10cebfcba92ded10a3174a",
+   "pages": 5,
+   "checks": {
+    "quality": {
+     "pass": true,
+     "reason": "readable text",
+     "letter_share": 0.949,
+     "common_word_share": 0.447,
+     "characters": 20687
+    },
+    "completeness": {
+     "pass": true,
+     "reason": "title, source, version/date and page count present; not truncated",
+     "pages": 5
+    },
+    "recency": {
+     "pass": true,
+     "reason": "only version"
+    },
+    "uniqueness": {
+     "pass": true,
+     "reason": "no duplicate (closest academic-rules-handbook-jun-2026-pdf at 0.912)",
+     "closest_similarity": 0.9118
+    }
+   },
+   "decision": "index",
+   "lake": null
+  },
+  {
+   "doc_id": "student-handbook-jun-2026-pdf",
+   "source": "student-handbook-jun-2026.pdf",
+   "batch": "base",
+   "title": "Student Handbook (Jun 2026)",
+   "doc_version": "2026-06",
+   "family": "student-handbook-jun-2026-pdf",
+   "sha256": "717eb4b8d37e50185ffe952735c08ef19edd16074d547f10ebd22cf23da67c4d",
+   "pages": 64,
+   "checks": {
+    "quality": {
+     "pass": true,
+     "reason": "readable text",
+     "letter_share": 0.942,
+     "common_word_share": 0.372,
+     "characters": 70425
+    },
+    "completeness": {
+     "pass": true,
+     "reason": "title, source, version/date and page count present; not truncated",
+     "pages": 64
+    },
+    "recency": {
+     "pass": true,
+     "reason": "only version"
+    },
+    "uniqueness": {
+     "pass": true,
+     "reason": "no duplicate (closest academic-rules-handbook-jun-2026-pdf at 0.954)",
+     "closest_similarity": 0.9544
+    }
+   },
+   "decision": "index",
+   "lake": null
+  },
+  {
+   "doc_id": "undergraduate-academic-rules-aug-2023-pdf",
+   "source": "undergraduate-academic-rules-aug-2023.pdf",
+   "batch": "base",
+   "title": "Undergraduate Academic Rules (Aug 2023)",
+   "doc_version": "2023-08",
+   "family": "undergraduate-academic-rules",
+   "sha256": "cddfe1f5e9770132e27d686abd1c2e6742ef4732f0c2f431ed514bc1691d2004",
+   "pages": 26,
+   "checks": {
+    "quality": {
+     "pass": true,
+     "reason": "readable text",
+     "letter_share": 0.932,
+     "common_word_share": 0.428,
+     "characters": 30841
+    },
+    "completeness": {
+     "pass": true,
+     "reason": "title, source, version/date and page count present; not truncated",
+     "pages": 26
+    },
+    "recency": {
+     "pass": false,
+     "reason": "newer version found: academic-rules-handbook-jun-2026.pdf (version 2026-06)",
+     "newer": "academic-rules-handbook-jun-2026-pdf"
+    },
+    "uniqueness": {
+     "pass": true,
+     "reason": "no duplicate (closest prospectus-2026-academic-rules-and-regulations-pdf at 0.956)",
+     "closest_similarity": 0.9557
+    }
+   },
+   "decision": "archive",
+   "lake": {
+    "pass": true,
+    "reason": "copied to /data/lake/archive/undergraduate-academic-rules-aug-2023-pdf/2023-08/undergraduate-academic-rules-aug-2023.pdf"
+   }
+  },
+  {
+   "doc_id": "b01-library-borrowing-rules-md",
+   "source": "b01-library-borrowing-rules.md",
+   "batch": "batch_b",
+   "title": "Library Borrowing Rules",
+   "doc_version": "2026-09",
+   "family": "library-borrowing-rules",
+   "sha256": "794b53aa80c5f68b71c724c1f92798aa90d6c062cf8cdbdec1eb19f88f5accdf",
+   "pages": 1,
+   "checks": {
+    "quality": {
+     "pass": true,
+     "reason": "readable text",
+     "letter_share": 0.955,
+     "common_word_share": 0.427,
+     "characters": 1674
+    },
+    "completeness": {
+     "pass": true,
+     "reason": "title, source, version/date and page count present; not truncated",
+     "pages": 1
+    },
+    "recency": {
+     "pass": true,
+     "reason": "only version"
+    },
+    "uniqueness": {
+     "pass": true,
+     "reason": "no duplicate (closest prospectus-2026-academic-rules-and-regulations-pdf at 0.810)",
+     "closest_similarity": 0.8105
+    }
+   },
+   "decision": "index",
+   "lake": null
+  },
+  {
+   "doc_id": "b08-fee-structure-2027-28-html",
+   "source": "b08-fee-structure-2027-28.html",
+   "batch": "batch_b",
+   "title": "Fee Structure 2027-28",
+   "doc_version": "2027-28",
+   "family": "fee-structure",
+   "sha256": "b5be30d53df401207f289998ad6d0f1f96966e46531a460bba72b55ad799bf89",
+   "pages": 1,
+   "checks": {
+    "quality": {
+     "pass": true,
+     "reason": "readable text",
+     "letter_share": 0.875,
+     "common_word_share": 0.293,
+     "characters": 1676
+    },
+    "completeness": {
+     "pass": true,
+     "reason": "title, source, version/date and page count present; not truncated",
+     "pages": 1
+    },
+    "recency": {
+     "pass": true,
+     "reason": "newest version"
+    },
+    "uniqueness": {
+     "pass": true,
+     "reason": "no duplicate (closest prospectus-2026-academic-rules-and-regulations-pdf at 0.815)",
+     "closest_similarity": 0.8154
+    }
+   },
+   "decision": "index",
+   "lake": null
+  },
+  {
+   "doc_id": "b09-exam-rescheduling-guidelines-md",
+   "source": "b09-exam-rescheduling-guidelines.md",
+   "batch": "batch_b",
+   "title": "Exam Rescheduling Guidelines",
+   "doc_version": "2026-09",
+   "family": "exam-rescheduling",
+   "sha256": "81b2d49bea392adf7e02769729fedcf25857a1d101a8e92e038674cb12c0be73",
+   "pages": 1,
+   "checks": {
+    "quality": {
+     "pass": true,
+     "reason": "readable text",
+     "letter_share": 0.963,
+     "common_word_share": 0.421,
+     "characters": 1375
+    },
+    "completeness": {
+     "pass": true,
+     "reason": "title, source, version/date and page count present; not truncated",
+     "pages": 1
+    },
+    "recency": {
+     "pass": true,
+     "reason": "only version"
+    },
+    "uniqueness": {
+     "pass": true,
+     "reason": "no duplicate (closest academic-rules-handbook-jun-2026-pdf at 0.820)",
+     "closest_similarity": 0.82
+    }
+   },
+   "decision": "index",
+   "lake": null
+  },
+  {
+   "doc_id": "b10-student-clubs-and-societies-policy-md",
+   "source": "b10-student-clubs-and-societies-policy.md",
+   "batch": "batch_b",
+   "title": "Student Clubs and Societies Policy",
+   "doc_version": "2026-09",
+   "family": "student-societies",
+   "sha256": "a6376a000b37b899d52cbbe9bc0478136dca63de2cd58edc995095f8ec911447",
+   "pages": 1,
+   "checks": {
+    "quality": {
+     "pass": true,
+     "reason": "readable text",
+     "letter_share": 0.963,
+     "common_word_share": 0.441,
+     "characters": 1398
+    },
+    "completeness": {
+     "pass": true,
+     "reason": "title, source, version/date and page count present; not truncated",
+     "pages": 1
+    },
+    "recency": {
+     "pass": true,
+     "reason": "only version"
+    },
+    "uniqueness": {
+     "pass": true,
+     "reason": "no duplicate (closest prospectus-2026-academic-rules-and-regulations-pdf at 0.829)",
+     "closest_similarity": 0.8288
+    }
+   },
+   "decision": "index",
+   "lake": null
+  }
+ ],
+ "ingest": {
+  "run": "20261125T042946Z",
+  "collection": "rahbar",
+  "embed_model": "nomic-embed-text",
+  "documents_seen": 13,
+  "indexed_active": 11,
+  "archived": 2,
+  "quarantined": 0,
+  "deleted_documents": [
+   "b03-laboratory-safety-policy-md"
+  ],
+  "rebuilt": false,
+  "chunks_wanted": 713,
+  "embedded": 0,
+  "skipped_unchanged": 713,
+  "metadata_updated": 0,
+  "deleted": 6,
+  "kept": 0,
+  "embedded_by_doc": {},
+  "deleted_by_doc": {
+   "b03-laboratory-safety-policy-md": 6
+  },
+  "index_version": "20261125T042955Z",
+  "total": 713
+ }
+}

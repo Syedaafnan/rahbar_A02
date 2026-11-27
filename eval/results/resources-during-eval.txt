@@ -1,0 +1,16 @@
+# kubectl top during the baseline eval Job (api answering, eval Job waiting on HTTP)
+$ kubectl top pods -n rahbar --containers   (06:43:18Z)
+POD                              NAME     CPU(cores)   MEMORY(bytes)   
+api-574449655b-78cxh             api      23m          75Mi            
+api-574449655b-b5792             api      35m          77Mi            
+api-574449655b-rmjgt             api      21m          75Mi            
+api-candidate-598dfcf9ff-njw82   api      25m          73Mi            
+chroma-0                         chroma   38m          188Mi           
+eval-baseline-d2p6r              eval     5m           24Mi            
+lake-shell                       shell    56m          3Mi             
+redis-5766dbfb48-sm8kp           redis    57m          3Mi             
+ui-5996dbdc64-475kf              ui       1m           4Mi             
+$ kubectl top pods -n rahbar --containers   (06:43:46Z)
+error: Metrics not available for pod rahbar/api-574449655b-78cxh, age: 26h19m37.1094659s
+$ kubectl top pods -n rahbar --containers   (06:44:16Z)
+error: Metrics API not available

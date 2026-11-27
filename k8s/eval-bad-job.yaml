@@ -1,0 +1,66 @@
+# The Part B suite against the deliberately BAD candidate (A03 C2, F3): api-candidate
+# switched to rahbar-config-bad (python scripts/release.py stage bad). Expected: the
+# release gate rejects it, the Job fails, and it is never rolled out.
+#
+#   kubectl -n rahbar delete job eval-bad --ignore-not-found
+#   kubectl apply -f k8s/eval-bad-job.yaml && kubectl -n rahbar logs -f job/eval-bad
+
+# --skip-e2e: the bad candidate is rejected on retrieval alone (recall@5 rule); generating
+# 36 answers on a CPU for a release that cannot pass would cost an hour for nothing.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: eval-bad
+  namespace: rahbar
+  labels: { app.kubernetes.io/name: eval, app.kubernetes.io/part-of: rahbar }
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 21600
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: eval, app.kubernetes.io/part-of: rahbar }
+    spec:
+      restartPolicy: Never
+      serviceAccountName: rahbar-eval
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: eval
+          image: rahbar-eval:dev
+          imagePullPolicy: IfNotPresent
+          args: ["suite.py", "--api", "http://api-candidate:8000", "--label", "bad", "--gate", "--skip-e2e"]
+          envFrom:
+            - configMapRef: { name: rahbar-config-bad }
+          env:
+            - { name: HOME, value: /tmp }
+            - { name: JUDGE, value: llm }
+            - { name: JUDGE_PROVIDER, value: ollama }
+            # the judge stays the live LLM, so baseline and candidate are judged alike
+            - { name: JUDGE_MODEL, value: "llama3.2:3b" }
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef: { name: rahbar-secret, key: LLM_API_KEY, optional: true }
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 500m, memory: 256Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - { name: results, mountPath: /results }
+            - { name: gate, mountPath: /config, readOnly: true }
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: results
+          persistentVolumeClaim: { claimName: eval-results }
+        - name: gate
+          configMap: { name: rahbar-gate }
+        - name: tmp
+          emptyDir: { sizeLimit: 64Mi }

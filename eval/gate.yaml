@@ -1,0 +1,33 @@
+# Release gate thresholds (A03 C2) and coverage threshold (A03 E2).
+# On the cluster this file is the ConfigMap `rahbar-gate` (k8s/base/gate-configmap.yaml
+# holds the same values): change a value there, re-run k8s/gate-job.yaml, and the
+# decision changes without rebuilding any image.
+#
+# Why these values (numbers from our own baseline runs, eval/results/):
+gate:
+  # recall@5 may not fall more than 2 points (0.02) below the baseline: the assignment's
+  # example, and larger than the run-to-run difference we measured (0.0, retrieval is
+  # deterministic), so a real regression is not hidden by noise.
+  recall_at_5_max_drop: 0.02
+  # At least 80% of answered questions must be supported by their context (LLM judge).
+  # Below that, one answer in five would contain a claim the documents do not make.
+  faithfulness_min: 0.80
+  # Citations must name passages retrieved for that request (A02 had the same 95%).
+  citation_validity_min: 0.95
+  # Abstention on the unanswerable questions may not get worse than the baseline.
+  abstention_not_below_baseline: true
+  # p95 end-to-end latency, from our CPU-only llama3.2:3b baseline (p95 about 2 min)
+  # plus 25% head room. A hosted model would justify a much lower limit.
+  p95_latency_ms_max: 180000
+
+coverage:
+  # A live query is "covered" when some golden question has cosine >= this value with
+  # it (nomic-embed-text, query prefix). 0.68 = the LEAST similar of our 15 hand-made
+  # paraphrase pairs (0.679; mean 0.757), far above the most similar unrelated pair
+  # (0.445). So "covered" means: at least as close to a test question as a real
+  # rewording of it. 0.75 (the paraphrase mean) left informal but on-topic queries
+  # ("my cgpa is 1.9 will i be kicked out") uncovered.
+  similarity_threshold: 0.68
+  # The paper's example flags a coverage gap when fewer than 85% of live queries reach
+  # the threshold.
+  min_share: 0.85

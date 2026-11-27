@@ -1,0 +1,7 @@
+$ python scripts/release.py promote bad
+release gate for the bad candidate: job/eval-bad is failed
+REFUSED: rahbar-config-bad is not rolled out. The Part B suite Job must complete (gate passed) first; the live api keeps serving rahbar-config.
+$ kubectl -n rahbar get job eval-bad
+NAME       STATUS   COMPLETIONS   DURATION   AGE
+eval-bad   Failed   0/1           37s        37s
+exit code: 1

@@ -21,7 +21,9 @@ from pipeline.run import build_chunks, wait_for_dependencies
 from pipeline.store import store
 
 FIXTURES = Path(__file__).resolve().parents[2] / "eval" / "fixtures"
-REQUIRED_METADATA = {"source", "section", "page", "doc_version", "superseded"}
+REQUIRED_METADATA = {"source", "section", "page", "doc_version", "superseded",
+                     # A03: identity for incremental updates and archiving
+                     "status", "doc_id", "title", "family", "chunk_hash"}
 
 
 # ------------------------------------------------------------------ extract

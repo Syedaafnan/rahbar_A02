@@ -24,7 +24,7 @@ def embed(texts: list[str], settings: IndexerSettings,
     vectors: list[list[float]] = []
     with httpx.Client(base_url=settings.ollama_url, timeout=300.0, transport=transport) as client:
         for start in range(0, len(texts), BATCH_SIZE):
-            batch = [DOCUMENT_PREFIX + t for t in texts[start:start + BATCH_SIZE]]
+            batch = [settings.embed_doc_prefix + t for t in texts[start:start + BATCH_SIZE]]
             vectors.extend(_embed_batch(client, settings.embed_model, batch))
     if vectors and len({len(v) for v in vectors}) != 1:
         raise RuntimeError("the embedding model returned vectors of different sizes")

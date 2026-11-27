@@ -1,0 +1,27 @@
+{
+ "run": "20261125T042629Z",
+ "collection": "rahbar",
+ "embed_model": "nomic-embed-text",
+ "documents_seen": 21,
+ "indexed_active": 12,
+ "archived": 2,
+ "quarantined": 7,
+ "deleted_documents": [],
+ "rebuilt": false,
+ "chunks_wanted": 719,
+ "embedded": 29,
+ "skipped_unchanged": 690,
+ "metadata_updated": 9,
+ "deleted": 0,
+ "kept": 0,
+ "embedded_by_doc": {
+  "b01-library-borrowing-rules-md": 6,
+  "b03-laboratory-safety-policy-md": 6,
+  "b08-fee-structure-2027-28-html": 7,
+  "b09-exam-rescheduling-guidelines-md": 5,
+  "b10-student-clubs-and-societies-policy-md": 5
+ },
+ "deleted_by_doc": {},
+ "index_version": "20261125T042747Z",
+ "total": 719
+}

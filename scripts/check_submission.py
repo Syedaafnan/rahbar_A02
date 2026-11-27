@@ -134,13 +134,6 @@ def slurp_src(patterns):
     return slurp(patterns, exclude_tests=True, code_only=True)
 
 
-def find_dir(*names):
-    for n in names:
-        if (ROOT / n).is_dir():
-            return n
-    return None
-
-
 def _function_body(src, name_pattern):
     """Return the body of the first function whose name matches, stopping at the
     next line that is not indented further than the `def` itself. Without this

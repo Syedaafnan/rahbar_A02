@@ -112,7 +112,8 @@ def fetch(force: bool) -> int:
             if old and not force and (RAW / old["file"]).exists() and old["url"] == url:
                 print(f"  have    {old['file']}")
                 entries.append({**old, "doc_version": doc.get("doc_version", "unknown"),
-                                "superseded": bool(doc.get("superseded", False))})
+                                "superseded": bool(doc.get("superseded", False)),
+                                "family": doc.get("family", "")})
                 continue
             print(f"  fetch   {name}")
             try:
@@ -132,6 +133,8 @@ def fetch(force: bool) -> int:
                     "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
                     "doc_version": doc.get("doc_version", "unknown"),
                     "superseded": bool(doc.get("superseded", False)),
+                    # A03: versions of one document share a family (recency check)
+                    "family": doc.get("family", ""),
                 })
                 print(f"          {file}, {len(response.content):,} bytes")
             except Exception as exc:  # report every failure, keep going
@@ -164,6 +167,7 @@ def write_manifest(entries: list[dict]) -> None:
     for e in entries:
         lines.append(f"| {e['name']} | {e['doc_version']} | {'yes' if e['superseded'] else 'no'} "
                      f"| `{e['file']}` | {e['bytes']:,} | `{e['sha256']}` | <{e['url']}> |")
+    MANIFEST_OUT.parent.mkdir(parents=True, exist_ok=True)
     MANIFEST_OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 

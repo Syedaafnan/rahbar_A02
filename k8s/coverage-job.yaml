@@ -1,0 +1,58 @@
+# Query coverage check on the cluster (A03 E2/E4): exits 1 (Job Failed) when fewer
+# than coverage.min_share of the live queries reach coverage.similarity_threshold
+# (ConfigMap rahbar-gate). Uses the live embedding model from rahbar-config.
+#
+#   kubectl -n rahbar delete job coverage --ignore-not-found
+#   kubectl apply -f k8s/coverage-job.yaml && kubectl -n rahbar logs -f job/coverage
+#
+# As committed it checks the golden set AFTER E4 (golden.jsonl + golden_e4.jsonl).
+# For the "before" picture remove golden_e4.jsonl from args (or run it locally:
+# python eval/coverage_check.py --label before).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: coverage
+  namespace: rahbar
+  labels: { app.kubernetes.io/name: eval, app.kubernetes.io/part-of: rahbar }
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 600
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: eval, app.kubernetes.io/part-of: rahbar }
+    spec:
+      restartPolicy: Never
+      serviceAccountName: rahbar-eval
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: coverage
+          image: rahbar-eval:dev
+          imagePullPolicy: IfNotPresent
+          args: ["coverage_check.py", "--label", "after-cluster",
+                 "--golden", "golden.jsonl", "golden_e4.jsonl"]
+          envFrom:
+            - configMapRef: { name: rahbar-config }
+          env:
+            - { name: HOME, value: /tmp }
+          resources:
+            requests: { cpu: 20m, memory: 32Mi }
+            limits: { cpu: 200m, memory: 128Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - { name: results, mountPath: /results }
+            - { name: gate, mountPath: /config, readOnly: true }
+      volumes:
+        - name: results
+          persistentVolumeClaim: { claimName: eval-results }
+        - name: gate
+          configMap: { name: rahbar-gate }

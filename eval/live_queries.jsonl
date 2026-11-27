@@ -1,0 +1,42 @@
+{"id": "l01", "topic": "academic standing", "in_domain": true, "query": "what gpa do i need so i dont get warning"}
+{"id": "l02", "topic": "academic standing", "in_domain": true, "query": "my cgpa is 1.9 will i be kicked out of uni"}
+{"id": "l03", "topic": "academic standing", "in_domain": true, "query": "how many semesters on probation before admission is closed"}
+{"id": "l04", "topic": "withdrawal", "in_domain": true, "query": "last date to withdraw a course this semester?"}
+{"id": "l05", "topic": "withdrawal", "in_domain": true, "query": "do i need my parents signature to drop a course"}
+{"id": "l06", "topic": "withdrawal", "in_domain": true, "query": "is the fee refunded if I withdraw from a course"}
+{"id": "l07", "topic": "attendance", "in_domain": true, "query": "what happens if my attendance is below 80 percent"}
+{"id": "l08", "topic": "attendance", "in_domain": true, "query": "minimum attendance required to sit in the final exam"}
+{"id": "l09", "topic": "fees", "in_domain": true, "query": "per credit hour fee for bs cs"}
+{"id": "l10", "topic": "fees", "in_domain": true, "query": "how much refund if i leave after 2 weeks of classes"}
+{"id": "l11", "topic": "fees", "in_domain": true, "query": "fee for rechecking my final paper"}
+{"id": "l12", "topic": "fees", "in_domain": true, "query": "is the security deposit refundable"}
+{"id": "l13", "topic": "fees", "in_domain": true, "query": "how much is the admission fee"}
+{"id": "l14", "topic": "summer semester", "in_domain": true, "query": "can i take a new course in summer"}
+{"id": "l15", "topic": "summer semester", "in_domain": true, "query": "how many courses can i repeat in summer semester"}
+{"id": "l16", "topic": "summer semester", "in_domain": true, "query": "how long is summer semester"}
+{"id": "l17", "topic": "generative AI", "in_domain": true, "query": "am i allowed to use chatgpt for my assignments"}
+{"id": "l18", "topic": "generative AI", "in_domain": true, "query": "what happens if turnitin detects ai in my report"}
+{"id": "l19", "topic": "generative AI", "in_domain": true, "query": "do I have to disclose that I used AI tools"}
+{"id": "l20", "topic": "grading", "in_domain": true, "query": "how are marks divided between mids and finals"}
+{"id": "l21", "topic": "grading", "in_domain": true, "query": "what sgpa do you need to get on the rector's list"}
+{"id": "l22", "topic": "grading", "in_domain": true, "query": "what is the passing grade in a course"}
+{"id": "l23", "topic": "registration", "in_domain": true, "query": "can i register a course if i failed the prereq"}
+{"id": "l24", "topic": "registration", "in_domain": true, "query": "can a final year student take an extra course"}
+{"id": "l25", "topic": "repeating courses", "in_domain": true, "query": "if i fail a course when do i have to repeat it"}
+{"id": "l26", "topic": "rules versions", "in_domain": true, "query": "what did the old 2023 rules say about withdrawing"}
+{"id": "l27", "topic": "start-ups", "in_domain": true, "query": "can faculty members start their own company"}
+{"id": "l28", "topic": "university events", "in_domain": true, "query": "when was the last convocation held"}
+{"id": "l29", "topic": "hostel", "in_domain": false, "query": "how much is the hostel fee per month"}
+{"id": "l30", "topic": "hostel", "in_domain": false, "query": "is there a girls hostel at the islamabad campus"}
+{"id": "l31", "topic": "hostel", "in_domain": false, "query": "what time do hostel gates close at night"}
+{"id": "l32", "topic": "transport", "in_domain": false, "query": "which bus route goes to rawalpindi"}
+{"id": "l33", "topic": "transport", "in_domain": false, "query": "how much is the point bus fee for one semester"}
+{"id": "l34", "topic": "sports", "in_domain": false, "query": "is there a gym on campus and what are its timings"}
+{"id": "l35", "topic": "sports", "in_domain": false, "query": "how do i join the university cricket team"}
+{"id": "l36", "topic": "cafeteria", "in_domain": false, "query": "what food is available in the cafe and how much does lunch cost"}
+{"id": "l37", "topic": "scholarships", "in_domain": false, "query": "how do i apply for a need based scholarship"}
+{"id": "l38", "topic": "scholarships", "in_domain": false, "query": "what is the merit scholarship criteria"}
+{"id": "l39", "topic": "internships", "in_domain": false, "query": "does the university help find summer internships"}
+{"id": "l40", "topic": "campus services", "in_domain": false, "query": "how do i get a parking sticker for my car"}
+{"id": "l41", "topic": "campus services", "in_domain": false, "query": "how do i connect to the campus wifi"}
+{"id": "l42", "topic": "health", "in_domain": false, "query": "is there a doctor or medical center on campus"}

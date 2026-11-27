@@ -1,0 +1,14 @@
+$ kubectl -n rahbar port-forward svc/api 18000:8000 &  curl -s localhost:18000/metrics | grep -E "^rahbar_(top1|abstention_ratio|cache_hit_ratio|injection|stage_seconds_count)"
+rahbar_cache_hit_ratio 0.3
+rahbar_top1_similarity_count 8.0
+rahbar_top1_similarity_sum 6.2614
+rahbar_stage_seconds_count{stage="embed"} 10.0
+rahbar_stage_seconds_count{stage="cache"} 10.0
+rahbar_stage_seconds_count{stage="retrieve"} 7.0
+rahbar_stage_seconds_count{stage="guardrail"} 7.0
+rahbar_stage_seconds_count{stage="generate"} 7.0
+rahbar_stage_seconds_count{stage="validate"} 7.0
+rahbar_stage_seconds_count{stage="total"} 10.0
+rahbar_injection_flags_total{action="dropped",target="passage"} 1.0
+rahbar_injection_flags_created{action="dropped",target="passage"} 1.7956989347929893e+09
+rahbar_abstention_ratio 0.1

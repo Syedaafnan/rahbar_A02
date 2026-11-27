@@ -1,0 +1,59 @@
+# Builds the CANDIDATE's collection (A03 C1/F3) with the candidate's ConfigMap: same
+# indexer image, same verification, the candidate's embedding model and collection
+# name. It is still "the only writer": no other component writes to Chroma.
+# LAKE_READ_ONLY: it reads the live data lake but never moves files in it.
+#
+#   kubectl -n rahbar delete job indexer-candidate --ignore-not-found
+#   kubectl apply -f k8s/candidate/indexer-candidate-job.yaml
+#   kubectl -n rahbar logs -f job/indexer-candidate
+#
+# Run it after the live indexer has ingested the lake (the base batch is downloaded
+# by the live Job's fetch initContainer).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: indexer-candidate
+  namespace: rahbar
+  labels: { app.kubernetes.io/name: indexer, app.kubernetes.io/part-of: rahbar }
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 3600
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: indexer, app.kubernetes.io/part-of: rahbar }
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: rahbar-indexer
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: indexer
+          image: rahbar-indexer:dev
+          imagePullPolicy: IfNotPresent
+          args: []
+          envFrom:
+            - configMapRef: { name: rahbar-config-candidate }
+          env:
+            - { name: HOME, value: /tmp }
+            - { name: LAKE_READ_ONLY, value: "true" }
+          resources:
+            requests: { cpu: 500m, memory: 512Mi }
+            limits: { cpu: "2", memory: 1536Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - { name: data, mountPath: /data }
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: data
+          persistentVolumeClaim: { claimName: corpus-data }
+        - name: tmp
+          emptyDir: { sizeLimit: 1Gi }

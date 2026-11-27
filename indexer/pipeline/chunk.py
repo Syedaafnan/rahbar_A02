@@ -20,6 +20,7 @@ fixed windows of words that ignore headings, paragraphs and sentences.
 
 from __future__ import annotations
 
+import hashlib
 import re
 from dataclasses import dataclass
 
@@ -64,7 +65,7 @@ def chunk(doc: Document, size: int, overlap: int) -> list[Chunk]:
                 current.extend(words)
         if current:
             chunks.append(_make(doc, len(chunks), section, page, previous_tail + current))
-    return chunks
+    return unique_ids(chunks)
 
 
 def chunk_fixed(doc: Document, size: int, overlap: int) -> list[Chunk]:
@@ -79,13 +80,10 @@ def chunk_fixed(doc: Document, size: int, overlap: int) -> list[Chunk]:
         if not window:
             break
         _, page, section = window[0]
-        chunks.append(Chunk(id=f"{_slug(doc.source)}-{len(chunks):04d}",
-                            text=" ".join(w for w, _, _ in window), source=doc.source,
-                            section=section, page=page, doc_version=doc.doc_version,
-                            superseded=doc.superseded))
+        chunks.append(_new_chunk(doc, section, page, " ".join(w for w, _, _ in window)))
         if start + size >= len(words):
             break
-    return chunks
+    return unique_ids(chunks)
 
 
 # ------------------------------------------------------------------ helpers
@@ -200,10 +198,31 @@ def _fit(text: str, size: int) -> list[str]:
 def _make(doc: Document, n: int, section: str, page: int, words: list[str]) -> Chunk:
     # The section path is written into the text too: the embedding then "knows" which
     # rule a clause belongs to, even when the clause itself never names it.
-    return Chunk(id=f"{_slug(doc.source)}-{n:04d}", text=f"{section}\n{' '.join(words)}",
-                 source=doc.source, section=section, page=page,
-                 doc_version=doc.doc_version, superseded=doc.superseded)
+    return _new_chunk(doc, section, page, section + "\n" + " ".join(words))
 
 
-def _slug(name: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+def _new_chunk(doc: Document, section: str, page: int, text: str) -> Chunk:
+    """A chunk's id is its document id plus the hash of its text (A03, incremental
+    updates): an unchanged chunk keeps its id across runs, so the store can skip it,
+    and a changed chunk gets a new id, so its old vector is replaced."""
+    digest = chunk_hash(text)
+    return Chunk(id=f"{doc.doc_id}:{digest}", text=text, source=doc.source, section=section,
+                 page=page, doc_version=doc.doc_version, superseded=doc.superseded,
+                 doc_id=doc.doc_id, title=doc.title, family=doc.family, chunk_hash=digest)
+
+
+def chunk_hash(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
+
+
+def unique_ids(chunks: list[Chunk]) -> list[Chunk]:
+    """The same text twice in one document (a repeated table row) would give the same
+    id; number the repeats so every id stays unique and still stable."""
+    seen: dict[str, int] = {}
+    for c in chunks:
+        n = seen.get(c.id, 0)
+        seen[c.id] = n + 1
+        if n:
+            c.id = f"{c.id}-{n}"
+    return chunks
+

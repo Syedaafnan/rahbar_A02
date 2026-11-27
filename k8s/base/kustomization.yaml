@@ -9,6 +9,8 @@ resources:
   - namespace.yaml
   - serviceaccounts.yaml
   - configmap.yaml
+  - gate-configmap.yaml           # A03: release gate thresholds
+  - pvcs.yaml                     # A03: traces + eval-results volumes
   - networkpolicy.yaml
   - chroma-statefulset.yaml
   - redis.yaml
